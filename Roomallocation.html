@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hostel | Room Allocation</title>
+    <link rel="shortcut icon" href="hostel-icon.png" type="image/x-icon" />
+    <link rel="stylesheet" href="css/user.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script> -->
+<!-- <script src="{% static 'js/validation.js' %}"></script> -->
+<!-- <script src="{% static 'js/entry.js' %}"></script> -->
+
+</head>
+<body>
+    <div class="parent">
+        <h2> <i class="fa-solid fa-circle-arrow-left back" onclick="history.back();" title="Go Back" ></i>Room Allocation<input type="button" value="Search" id="search_user"></h2>
+        <form enctype="multipart/form-data" method="post">
+            
+            <table>
+                <tr>
+                    
+                    <td>
+                        <!-- <label class="l_fixed" for="Id">Room ID </label> -->
+                        <i class="fa-solid fa-id-card i1"></i>
+                        <!-- <input required type="text" name="emp_id" id="id" value="" readonly> -->
+                        <select name="" id="roomid">
+                            <option value="">---Select room id---</option>
+                        </select>
+                        <span> </span>
+                    </td>
+                    <td>
+                        <label class="l_fixed" for="userid">User Id </label>
+                        <i class="fa-solid fa-id-card i1"></i>
+                        <input required type="text" name="emp_id" id="userid" value="" >
+                        <span> </span>
+                    </td>
+                    
+                    <td>
+                        <label class="l_fixed" for="dob">Check In</label>
+                        <i class="fa-solid fa-calendar i1"></i>
+                        <input required type="date" name="dob" id="checkin">
+                        <span> </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label class="l_fixed" for="dob">Check Out</label>
+                        <i class="fa-solid fa-calendar i1"></i>
+                        <input required type="date" name="dob" id="checkout">
+                        <span> </span>
+                    </td>
+                    
+                    <td>
+                        <!-- <label class="l_move" for="f_name">Status</label> -->
+                        <i class="fa-solid fa-chart-line i1"></i>
+                        <select name="" id="status">
+                            <option value="">---Status---</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                        <span></span>
+                    </td>
+                    <td>
+                        <div class="button">
+                            <button id="room_alloc_submit" type="submit" value="Submit" style="background-color: rgb(0, 255, 0); color: black;"> <i
+                                    class="fa-solid fa-arrow-up-from-bracket"></i> &nbsp; Submit </button>
+                            <button type="reset" value="Reset" style="background-color: rgb(0, 208, 255); color: black;"><i
+                                    class="fa-solid fa-rotate-left"></i> Reset </button>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</body>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script src="scripts/roomallocation.js"></script>
+</html>
