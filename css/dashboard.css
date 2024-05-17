@@ -83,7 +83,7 @@ body {
 aside {
   position: absolute;
   background-color: #89cff3;
-  height: 100%;
+  min-height: 120vh;
   text-align: center;
   padding: 1rem;
 }
@@ -109,9 +109,8 @@ aside h1:first-child a{
 }
 section{
   display: flex;
-  justify-content: space-evenly;
+  flex-direction: column;
   align-items: center;
-  flex-wrap: wrap;
   gap:4rem;
   /* background-color: black; */
   width: 86.2%;
@@ -119,7 +118,26 @@ section{
   margin-left: 13.8%;
   padding: 2rem;
 }
+.main-div-gp{
+  display: flex;
+  justify-content: space-evenly;
+  align-items: inherit;
+  flex-wrap: wrap;
+  gap:4rem;
+}
+section #graph{
+  border-top: solid 1px gainsboro;
+  padding-top: 2rem;
+  width: 100%;
+  /* border: solid 1px red; */
+}
+section #graph #myChart{
+  margin: auto;
+  /* border: solid 1px red; */
+  max-width:60rem;
+}
 section .ur_div{
+  /* height: 100%; */
   padding: 1rem;
   width: 25%;
   border-radius: .5rem;
@@ -132,6 +150,7 @@ section .ur_div{
   }
 }
 section .ur_div div{
+  height: 100%;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -146,8 +165,8 @@ section .ur_div i{
   text-shadow: 3px 4px 7px rgba(81,67,21,0.8);
 }
 section .ur_div span{
+  text-align: center;
   font-size: 3rem;
   font-weight: bold;
-  word-wrap: break-word;
   text-shadow: 3px 4px 7px rgba(81,67,21,0.8);
 }

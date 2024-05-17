@@ -40,13 +40,16 @@ if(what == "user_details_insertion"):
         and user_photo != None and user_aadhar != None and user_street != None 
         and user_dist_state != None and user_pincode != None and user_local_guard != None and
         user_local_guard_cont != None and user_local_guard_addr != None):
-            
-            user_insert_query = f"insert into user_info (userid,username,user_cont,user_gender,user_dob,user_blood_grp,user_f_name,user_m_name,user_p_contact,user_pic,user_addhar,user_street,user_dstate,user_pin, user_local_guard,user_local_guard_cont, user_local_guard_add) values('{user_id}','{user_name}','{user_contact}','{user_gender}','{user_dob}','{user_blood}','{user_father}','{user_mother}','{user_par_contact}','{user_photo}','{user_aadhar}','{user_street}','{user_dist_state}','{user_pincode}','{user_local_guard}','{user_local_guard_cont}','{user_local_guard_addr}')"
-            print(user_insert_query)
-            cur.execute(user_insert_query)
-            print("yaha")
-            con.commit()
-            print("user inserted successfully")
+            cur.execute(f'select * from user_info where userid="{user_id}"')
+            if cur.fetchall()==[]:
+                user_insert_query = f"insert into user_info (userid,username,user_cont,user_gender,user_dob,user_blood_grp,user_f_name,user_m_name,user_p_contact,user_pic,user_addhar,user_street,user_dstate,user_pin, user_local_guard,user_local_guard_cont, user_local_guard_add) values('{user_id}','{user_name}','{user_contact}','{user_gender}','{user_dob}','{user_blood}','{user_father}','{user_mother}','{user_par_contact}','{user_photo}','{user_aadhar}','{user_street}','{user_dist_state}','{user_pincode}','{user_local_guard}','{user_local_guard_cont}','{user_local_guard_addr}')"
+                print(user_insert_query)
+                cur.execute(user_insert_query)
+                print("yaha")
+                con.commit()
+                print("user inserted successfully")
+            else:
+                print("user already exists")
         else:
             print("one of the field is empty")
 
@@ -62,10 +65,14 @@ elif(what == "room_details_insertion"):
         status = f.getvalue("status")
 
         if(room_no != None and room_type != None and total_bed != None and status != None):
-            room_details_insert = f"insert into room_details (room_no, room_type, total_bed, status) values('{room_no}','{room_type}','{total_bed}','{status}')"
-            cur.execute(room_details_insert)
-            con.commit()
-            print("room details inserted successfully")
+            cur.execute(f"select * from room_details where room_no={room_no}")
+            if cur.fetchall()==[]:
+                room_details_insert = f"insert into room_details (room_no, room_type, total_bed, status) values('{room_no}','{room_type}','{total_bed}','{status}')"
+                cur.execute(room_details_insert)
+                con.commit()
+                print("room details inserted successfully")
+            else:
+                print('Room Number Already Exists!!')
         else:
             print("one of the field is empty")
 
@@ -74,17 +81,71 @@ elif(what == "room_details_insertion"):
 
 elif(what=="fetchroomid"):
     try:
-        cur.execute("select distinct room_no from room_details")
+        cur.execute("select distinct room_no,room_type,total_bed,status from room_details")
         res = cur.fetchall()
         if res != []:
+            room_no=set()
+            room_type=set()
+            total_bed=set()
+            status=set()
             for row in res:
-                print(f"<option value='{row[0]}'>{row[0]}</option>")
+                room_no.add(row[0])
+                room_type.add(row[1])
+                total_bed.add(row[2])
+                status.add(row[3])
+            print('<option value="">-- Select Room Id --</option>')
+            for row in room_no:
+                print(f"<option value='{row}'>{row}</option>")
+            print('&&')
+            print('<option value="">-- Select Room Type --</option>')
+            for row in room_type:
+                print(f"<option value='{row}'>{row}</option>")
+            print('&&')
+            print('<option value="">-- Select No. Of Bed --</option>')
+            for row in total_bed:
+                print(f"<option value='{row}'>{row}</option>")
+            print('&&')
+            print('<option value="">-- Select Room Status --</option>')
+            for row in status:
+                print(f"<option value='{row}'>{row}</option>")
+            print('&&')
+            if f.getvalue('user') == 'Yes':
+                cur.execute("select distinct userid from user_info")
+                res = cur.fetchall()
+                if res != []:
+                    for row in res:
+                        print(f"<option value='{row[0]}'>{row[0]}</option>")
+                else:
+                    print()
+            print('all detail fetched!!')
         else:
             print()
     except Exception as e:
         print(e)
 
-
+elif(what=="userserdata"):
+    try:
+        cur.execute("select distinct userid,user_blood_grp from user_info")
+        res = cur.fetchall()
+        if res != []:
+            userid=set()
+            bloodgrp=set()
+            for row in res:
+                userid.add(row[0])
+                bloodgrp.add(row[1])
+            print('<option value="">-- Select User Id --</option>')
+            for row in userid:
+                print(f"<option value='{row}'>{row}</option>")
+            print('&&')
+            print('<option value="">-- Select Blood Group --</option>')
+            for row in bloodgrp:
+                print(f"<option value='{row}'>{row}</option>")
+            print('&&')
+            print('all detail fetched!!')
+        else:
+            print()
+    except Exception as e:
+        print(e)
 
 elif(what=="checkuserid"):
     userid = f.getvalue("userid")
@@ -106,10 +167,14 @@ elif(what == "room_allocation"):
         status = f.getvalue("status")
 
         if(room_no != None and userid != None  and checkin != None and checkout != None and status != None):
-            room_allocation_insert = f"insert into room_allocation(roomid, userid,checkin,checkout,status) values('{room_no}','{userid}','{checkin}','{checkout}','{status}')"
-            cur.execute(room_allocation_insert)
-            con.commit()
-            print("room allocated successfully")
+            cur.execute(f'select * from room_allocation where roomid="{room_no}" and userid="{userid}"')
+            if cur.fetchall()==[]:
+                room_allocation_insert = f"insert into room_allocation(roomid, userid,checkin,checkout,status) values('{room_no}','{userid}','{checkin}','{checkout}','{status}')"
+                cur.execute(room_allocation_insert)
+                con.commit()
+                print("room allocated successfully")
+            else:
+                print('already exists!!')
         else:
             print("one of the field is empty")
 
@@ -143,17 +208,105 @@ elif(what == "rules_insertion"):
         rules_area = f.getvalue("rules_area")
 
         if(user_id != None and rules_area != None):
-            rules_insertion = f"insert into rules(userid,rules) values('{user_id}','{rules_area}')"
-            cur.execute(rules_insertion)
-            con.commit()
-            print("rules inserted successfully")
+            cur.execute(f'select * from rules where userid="{user_id}"')
+            if cur.fetchall() == []:
+                rules_insertion = f"insert into rules(userid,rules) values('{user_id}','{rules_area}')"
+                cur.execute(rules_insertion)
+                con.commit()
+                print("rules inserted successfully")
+            else:
+                print("already exists!!")
         else:
             print("one of the field is empty")
 
     except Exception as e:
         print(e)
 
+elif(what == "useridrules"):
+    try:
+        cur.execute("select distinct userid from rules")
+        res = cur.fetchall()
+        if res != []:
+            print('<option value="">-- Select User Id --</option>')
+            for row in res:
+                print(f"<option value='{row[0]}'>{row[0]}</option>")
+            print('&&')
+            print('all detail fetched!!')
+        else:
+            print()
+    except Exception as e:
+        print(e)
+elif(what == "useridrulessearch"):
+    try:
+        userid = f.getvalue("userid")
+        if userid:
+            cur.execute(f'select * from rules where userid="{userid}"')
+            srr = cur.fetchall()
+            if srr != []:
+                # print("<br>yes")
+                print("<table style='width:100%;'><thead>")
+                print("<tr>")
+                print("<th>User ID</th>")
+                print("<th>Rules Details</th>")
+                print("<th colspan='2' style='text-align:center;'>Action</th>")
+                print("</tr></thead><tbody>")
+                for row in srr:
+                    print("<tr>")
+                    print(f'<td>{row[0]}</td>')
+                    print(f'<td>{row[1]}</td>')
+                    print(f"<td><i class='fa-solid fa-pen-to-square fa-xl edit'  id=\"edit\" style=\"color: green;cursor:pointer;\"></i></td>")
+                    print(f"<td><i class='fa-solid fa-trash-can fa-xl del' style=\"color: red;cursor:pointer;\"></i></td>")
+                    print("</tr>")
+                print("</tbody></table>")
+                print('<p style="display:none;">rules fetched successfully</p>')
+            else:
+                print("no data available")
+        else:
+            print('please select one field')
+    except Exception as e:
+        print(e)
+elif (what == 'deleterulesuser'):
+    try:
+        userid = f.getvalue("userid")
+        delete_room_query = f"delete from rules where userid = '{userid}'"
+        cur.execute(delete_room_query)
+        con.commit()
+        print("ruleuser deleted successfully")
+    except Exception as e:
+        print(e)
+        
+elif(what == "fetchForRulesUpdate"):
+    # print(what)
+    try:
+        userid = f.getvalue("userid")
+        # print(userid + " have gotten")
+        if(userid != None):
+            fetch_for_upd_room = f"select * from rules where userid='{userid}'"
+            # print(fetch_for_upd_room)
+            cur.execute(fetch_for_upd_room)
+            res = cur.fetchall()
+            if res != []:
+                print(*res[0],sep='&&')
+                print('&&data fetching successfully!!')
+            else:
+                print("no data available")
+    except Exception as e:
+        print(e)  
 
+elif(what == "savetheRuleupdate"):
+    try:
+        userid = f.getvalue("userid")
+        rules = f.getvalue("rules")
+        if( userid != None and rules != None):
+            saveRoomUpdate_query = f"update rules SET rules = '{rules}' where userid = '{userid}'"
+            cur.execute(saveRoomUpdate_query)
+            con.commit()
+            print("ruleuser successfully updated")
+        else:
+            print("no field should be empty")
+    except Exception as e:
+        print(e)
+                
 elif(what=="fetchuserid"):
     try:
         cur.execute("select distinct userid from user_info")
@@ -201,65 +354,62 @@ elif(what == "fetch_user_conditions"):
         fetch_user_query = "SELECT * FROM user_info"
         if conditions:
             fetch_user_query += " WHERE " + " AND ".join(conditions)
-       
-        # print(fetch_user_query)
-
-
-        cur.execute(fetch_user_query)
-        srr = cur.fetchall()
-        if srr != []:
-            # print("<br>yes")
-            print("<table class='tab'>")
-            print("<tr>")
-            print("<th>User Id</th>")
-            print("<th>User Name</th>")
-            print("<th>User Contact</th>")
-            print("<th>User Gender</th>")
-            print("<th>User DOB</th>")
-            print("<th>User Blood Group</th>")
-            print("<th>F's Name</th>")
-            print("<th>M's Name</th>")
-            print("<th>Parent Contact</th>")
-            print("<th>Aadhar No</th>")
-            print("<th>Street No</th>")
-            print("<th>District State</th>")
-            print("<th>PinCode No</th>")
-            print("<th>Local Guardian</th>")
-            print("<th>Local Guardian Contact</th>")
-            print("<th>Local Guardian Address</th>")
-            print("<th>images</th>")
-            # print("<th>Size</th>")
-            print("<th colspan='2' style='text-align:center;'>action</th>")
-            print("</tr>")
-            for row in srr:
-                # print(row)
+            cur.execute(fetch_user_query)
+            srr = cur.fetchall()
+            if srr != []:
+                # print("<br>yes")
+                print("<table style='width:100%' id='myTable'><thead>")
                 print("<tr>")
-                print(f'<td>{row[0]}</td>')
-                print(f'<td>{row[1]}</td>')
-                print(f'<td>{row[2]}</td>')
-                print(f'<td>{row[3]}</td>')
-                print(f'<td>{row[4]}</td>')
-                print(f'<td>{row[5]}</td>')
-                print(f'<td>{row[6]}</td>')
-                print(f'<td>{row[7]}</td>')
-                print(f'<td>{row[8]}</td>')
-                print(f'<td>{row[10]}</td>')
-                print(f'<td>{row[11]}</td>')
-                print(f'<td>{row[12]}</td>')
-                print(f'<td>{row[13]}</td>')
-                print(f'<td>{row[15]}</td>')
-                print(f'<td>{row[16]}</td>')
-                print(f'<td>{row[14]}</td>')
-                
-                print(f'<td><a href=''>view</a></td>')
-                print(f"<td><i class='fa-solid fa-pen-to-square fa-xl edit'  id=\"edit\" ></i></td>")
-                print(f"<td><i class='fa-solid fa-trash-can fa-xl del'></i></td>")
-                print("</tr>")
-            print("</table>")
-            print("<p style='display:none;'>product details fetched successfully</p>")
+                print("<th>User&nbsp;Id</th>")
+                print("<th>User&nbsp;Name</th>")
+                print("<th>User&nbsp;Contact</th>")
+                print("<th>Gender</th>")
+                print("<th>DOB</th>")
+                print("<th>Blood&nbsp;Group</th>")
+                print("<th>Father's&nbsp;Name</th>")
+                print("<th>Mother's&nbsp;Name</th>")
+                print("<th>Parent&nbsp;Contact</th>")
+                print("<th>Aadhar&nbsp;No.</th>")
+                print("<th>Street</th>")
+                print("<th>District,&nbsp;State</th>")
+                print("<th>PinCode</th>")
+                print("<th>Guardian&nbsp;Name</th>")
+                print("<th>Guardian&nbsp;Number</th>")
+                print("<th>Guardian&nbsp;Address</th>")
+                print("<th>User&nbsp;Pic</th>")
+                # print("<th>Size</th>")
+                print("<th colspan='2' style='text-align:center;'>Action</th>")
+                print("</tr></thead><tbody>")
+                for row in srr:
+                    # print(row)
+                    print("<tr>")
+                    print(f'<td>{row[0]}</td>')
+                    print(f'<td>{row[1]}</td>')
+                    print(f'<td>{row[2]}</td>')
+                    print(f'<td>{row[3]}</td>')
+                    print(f'<td>{row[4]}</td>')
+                    print(f'<td>{row[5]}</td>')
+                    print(f'<td>{row[6]}</td>')
+                    print(f'<td>{row[7]}</td>')
+                    print(f'<td>{row[8]}</td>')
+                    print(f'<td>{row[10]}</td>')
+                    print(f'<td>{row[11]}</td>')
+                    print(f'<td>{row[12]}</td>')
+                    print(f'<td>{row[13]}</td>')
+                    print(f'<td>{row[15]}</td>')
+                    print(f'<td>{row[16]}</td>')
+                    print(f'<td>{row[14]}</td>')
+                    print(f'<td><a href="{row[9].decode()}" class="view-link">view</a></td>')
+                    print(f"<td><i class='fa-solid fa-pen-to-square fa-xl edit'  id=\"edit\" style='color:green;cursor:pointer;'></i></td>")
+                    print(f"<td><i class='fa-solid fa-trash-can fa-xl del' style='color:red;cursor:pointer;'></i></td>")
+                    print("</tr>")
+                print("</tbody></table>")
+                print("<p style='display:none;'>product details fetched successfully</p>")
+            else:
+                # print("no")
+                print("no data available")
         else:
-            # print("no")
-            print("no data available")
+            print('please select one field')
     except Exception as e:
         print(e)
 
@@ -269,26 +419,13 @@ elif(what == "deleteuser"):
         user_id = f.getvalue("userid")
         # print(prod_id + " have gotten")
         delete_user_query = f"delete from user_info where userid = '{user_id}'"
-        print(delete_user_query)
         cur.execute(delete_user_query)
         con.commit()
         print("user deleted successfully")
     except Exception as e:
         print(e)
 
-elif(what=="fetchroomid"):
-    try:
-        cur.execute("select distinct room_no from room_details")
-        res = cur.fetchall()
-        if res != []:
-            for row in res:
-                print(f"<option value='{row[0]}'>{row[0]}</option>")
-        else:
-            print()
-    except Exception as e:
-        print(e)
 
-# fetching data on click of search button or searching data
 elif(what == "fetch_room_conditions"):
     # print(d)
     try:
@@ -322,27 +459,26 @@ elif(what == "fetch_room_conditions"):
         srr = cur.fetchall()
         if srr != []:
             # print("<br>yes")
-            print("<table class='tab'>")
+            print("<table style='width:100%;'><thead>")
             print("<tr>")
             print("<th>Room No</th>")
             print("<th>Room Type</th>")
             print("<th>Total Bed</th>")
-            print("<th>Status Gender</th>")
-            print("<th colspan='2' style='text-align:center;'>action</th>")
-            print("</tr>")
+            print("<th>Status</th>")
+            print("<th colspan='2' style='text-align:center;'>Action</th>")
+            print("</tr></thead><tbody>")
             for row in srr:
-                # print(row)
                 print("<tr>")
                 print(f'<td>{row[0]}</td>')
                 print(f'<td>{row[1]}</td>')
                 print(f'<td>{row[2]}</td>')
                 print(f'<td>{row[3]}</td>')
                 
-                print(f"<td><i class='fa-solid fa-pen-to-square fa-xl edit'  id=\"edit\" ></i></td>")
-                print(f"<td><i class='fa-solid fa-trash-can fa-xl del'></i></td>")
+                print(f"<td><i class='fa-solid fa-pen-to-square fa-xl edit'  id=\"edit\" style=\"color: green;cursor:pointer;\"></i></td>")
+                print(f"<td><i class='fa-solid fa-trash-can fa-xl del' style=\"color: red;cursor:pointer;\"></i></td>")
                 print("</tr>")
-            print("</table>")
-            print("<p style='display:none;'>room details fetched successfully</p>")
+            print("</tbody></table>")
+            print('<p style="display:none;">room details fetched successfully</p>')
         else:
             # print("no")
             print("no data available")
@@ -398,17 +534,16 @@ elif(what == "fetch_room_allocation_conditions"):
         srr = cur.fetchall()
         if srr != []:
             # print("<br>yes")
-            print("<table class='tab'>")
+            print("<table style=\"width:100%\"><thead>")
             print("<tr>")
             print("<th>Room No</th>")
             print("<th>User Id</th>")
             print("<th>Checkin</th>")
             print("<th>Checkout</th>")
             print("<th>Status</th>")
-            print("<th colspan='2' style='text-align:center;'>action</th>")
-            print("</tr>")
+            print("<th colspan='2' style='text-align:center;'>Action</th>")
+            print("</tr></thead><tbody>")
             for row in srr:
-                # print(row)
                 print("<tr>")
                 print(f'<td>{row[0]}</td>')
                 print(f'<td>{row[1]}</td>')
@@ -416,10 +551,10 @@ elif(what == "fetch_room_allocation_conditions"):
                 print(f'<td>{row[3]}</td>')
                 print(f'<td>{row[4]}</td>')
                 
-                print(f"<td><i class='fa-solid fa-pen-to-square fa-xl edit'  id=\"edit\" ></i></td>")
-                print(f"<td><i class='fa-solid fa-trash-can fa-xl del'></i></td>")
+                print(f"<td><i class='fa-solid fa-pen-to-square fa-xl edit'  id=\"edit\" style='color:green;cursor:pointer;'></i></td>")
+                print(f"<td><i class='fa-solid fa-trash-can fa-xl del' style='color:red;cursor:pointer;'></i></td>")
                 print("</tr>")
-            print("</table>")
+            print("</tbody></table>")
             print("<p style='display:none;'>room allocation fetched successfully</p>")
         else:
             # print("no")
@@ -439,7 +574,41 @@ elif(what == "deleteroomalloc"):
     except Exception as e:
         print(e)
 
-
+elif(what == 'allfeeinput'):
+    try:
+        cur.execute("select * from fee_details")
+        res = cur.fetchall()
+        if res != []:
+            userid=set()
+            month_name=set()
+            fstatus=set()
+            paymode=set()
+            for row in res:
+                userid.add(row[1])
+                paymode.add(row[4])
+                month_name.add(row[5])
+                fstatus.add(row[6])
+            print('<option value="">-- Select User Id --</option>')
+            for row in userid:
+                print(f"<option value='{row}'>{row}</option>")
+            print('&&')
+            print('<option value="">-- Select Payment Mode --</option>')
+            for row in paymode:
+                print(f"<option value='{row}'>{row}</option>")
+            print('&&')
+            print('<option value="">-- Select Payment Month --</option>')
+            for row in month_name:
+                print(f"<option value='{row}'>{row}</option>")
+            print('&&')
+            print('<option value="">-- Select Payment Status --</option>')
+            for row in fstatus:
+                print(f"<option value='{row}'>{row}</option>")
+            print('&&')
+            print('all detail fetched!!')
+        else:
+            print()
+    except Exception as e:
+        print(e)
 # fetching data on click of search button or searching data
 elif(what == "fee_details_condtions"):
     # print(d)
@@ -472,42 +641,42 @@ elif(what == "fee_details_condtions"):
         fetch_feedetails_query = "SELECT * FROM fee_details"
         if conditions:
             fetch_feedetails_query += " WHERE " + " AND ".join(conditions)
-       
-        # print(fetch_feedetails_query)
-
-
-        cur.execute(fetch_feedetails_query)
-        srr = cur.fetchall()
-        if srr != []:
-            # print("<br>yes")
-            print("<table class='tab'>")
-            print("<tr>")
-            print("<th>User Id</th>")
-            print("<th>Fee Amount</th>")
-            print("<th>Pay Date</th>")
-            print("<th>Pay Mode</th>")
-            print("<th>Month Name</th>")
-            print("<th>Payment Status</th>")
-            print("<th colspan='2' style='text-align:center;'>action</th>")
-            print("</tr>")
-            for row in srr:
-                # print(row)
+            cur.execute(fetch_feedetails_query)
+            srr = cur.fetchall()
+            if srr != []:
+                # print("<br>yes")
+                print("<table style='width:100%'><thead>")
                 print("<tr>")
-                print(f'<td>{row[0]}</td>')
-                print(f'<td>{row[1]}</td>')
-                print(f'<td>{row[2]}</td>')
-                print(f'<td>{row[3]}</td>')
-                print(f'<td>{row[4]}</td>')
-                print(f'<td>{row[5]}</td>')
-                
-                print(f"<td><i class='fa-solid fa-pen-to-square fa-xl edit'  id=\"edit\" ></i></td>")
-                print(f"<td><i class='fa-solid fa-trash-can fa-xl del'></i></td>")
-                print("</tr>")
-            print("</table>")
-            print("<p style='display:none;'>fee details fetched successfully</p>")
+                print("<th hidden>SN.</th>")
+                print("<th>User Id</th>")
+                print("<th>Fee Amount</th>")
+                print("<th>Payment Date</th>")
+                print("<th>Payment Mode</th>")
+                print("<th>Month Name</th>")
+                print("<th>Payment Status</th>")
+                print("<th colspan='2' style='text-align:center;'>Action</th>")
+                print("</tr></thead><tbody>")
+                for row in srr:
+                    # print(row)
+                    print("<tr>")
+                    print(f'<td hidden>{row[0]}</td>')
+                    print(f'<td>{row[1]}</td>')
+                    print(f'<td>{row[2]}</td>')
+                    print(f'<td>{row[3]}</td>')
+                    print(f'<td>{row[4]}</td>')
+                    print(f'<td>{row[5]}</td>')
+                    print(f'<td>{row[6]}</td>')
+                    
+                    print(f"<td><i class='fa-solid fa-pen-to-square fa-xl edit'  id=\"edit\" style='color:green;cursor:pointer;'></i></td>")
+                    print(f"<td><i class='fa-solid fa-trash-can fa-xl del' style='color:red;cursor:pointer;'></i></td>")
+                    print("</tr>")
+                print("</tbody></table>")
+                print("<p style='display:none;'>fee details fetched successfully</p>")
+            else:
+                # print("no")
+                print("no data available")
         else:
-            # print("no")
-            print("no data available")
+            print('please select one field')
     except Exception as e:
         print(e)
 
@@ -515,7 +684,7 @@ elif(what == "fee_details_condtions"):
 elif(what == "deletefee"):
     try:
         userid = f.getvalue("userid")
-        delete_fee_query = f"delete from fee_details where userid = '{userid}'"
+        delete_fee_query = f"delete from fee_details where id = '{userid}'"
         print(delete_fee_query)
         cur.execute(delete_fee_query)
         con.commit()
@@ -534,88 +703,8 @@ elif(what == "fetchForRoomUpdate"):
             cur.execute(fetch_for_upd_room)
             res = cur.fetchall()
             if res != []:
-                print("<div style='display:none;'>data fetching successfully</div>")
-                # print(res)
-                print("<span><i class='fa-solid fa-xmark fa-2xl'></i></span>")
-                print("<form class='catupform'>")
-                for row in res:
-                    print(f'''<div class="parent">
-      <h2>
-        
-         Room Details Form
-      </h2>
-      <form enctype="multipart/form-data" method="post">
-        <table>
-          <tr><td>
-              <label class="l_move" for="room_no">Room No</label>
-              <i class="fa-solid fa-people-roof i1"></i>
-              <input
-                required
-                type="text"
-                id="room_no"
-                name="room_no"
-                value='{row[0]}'
-                readonly
-              />
-              <span> </span>
-            </td>
-            <td>
-              <select name="" id="room_type">
-                <option value="{row[1]}" selected>{row[1]}</option>
-                <option value="ac">ac</option>
-                <option value="non ac">non ac</option>
-              </select>
-              <span></span>
-            </td>
-            <td>
-                <label class="l_move" for="t_bed1">Total Bed</label>
-                <i class="fa-solid fa-bed i1"></i>
-                <input required type="text" value='{row[2]}' id="t_bed1"
-                />
-                <span></span>
-              </td>
-          </tr>
-       
-
-          <tr>
-            <td>
-                <!-- <label class="l_move" for="status">Status</label> -->
-                <select name="" id="status1">
-                  <option value='{row[3]}'>{row[3]}</option>
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
-                </select>
-                <!-- <span></span> -->
-                <span></span>
-            </td>
-            <td colspan="2">
-              <div class="button">
-                <button
-                  type="submit"
-                  value="Save"
-                  style="background-color: rgb(0, 255, 0); color: black"
-                  id="save"
-                >
-                  <i class="fa-solid fa-arrow-up-from-bracket"></i> &nbsp;
-                  Submit
-                </button>
-                <button
-                  type="reset"
-                  value="Reset"
-                  style="background-color: rgb(0, 208, 255); color: black"
-                >
-                  <i class="fa-solid fa-rotate-left"></i> Reset
-                </button>
-              </div>
-            </td>
-          </tr>
-        </table>
-      </form>
-    </div>
-
-''')
-              
-                print("</form>")
+                print(*res[0],sep='&&')
+                print('&&data fetching successfully!!')
             else:
                 print("no data available")
     except Exception as e:
@@ -644,80 +733,14 @@ elif(what == "fetchForRoomAllocUpdate"):
     # print(what)
     try:
         roomid = f.getvalue("roomid")
-        # print(userid + " have gotten")
+        userid = f.getvalue("userid")
         if(roomid != None):
-            fetch_for_upd_room_alloc = f"select * from room_allocation where roomid='{roomid}'"
-            # print(fetch_for_upd_room)
+            fetch_for_upd_room_alloc = f"select * from room_allocation where roomid='{roomid}' and userid='{userid}'"
             cur.execute(fetch_for_upd_room_alloc)
             res = cur.fetchall()
             if res != []:
-                print("<div style='display:none;'>data fetching successfully</div>")
-                # print(res)
-                print("<span><i class='fa-solid fa-xmark fa-2xl'></i></span>")
-                print("<form class='catupform'>")
-                for row in res:
-                    print(f'''<div class="parent">
-        <h2> Room Allocation</h2>
-        <form enctype="multipart/form-data" method="post">
-            
-            <table>
-                <tr>
-                    
-                    <td>
-                        <!-- <label class="l_fixed" for="Id">Room ID </label> -->
-                        <i class="fa-solid fa-id-card i1"></i>
-                        <!-- <input required type="text" name="emp_id" id="id" value="" readonly> -->
-                        <select name="" id="roomid1" readonly>
-                            <option value="{row[0]}">{row[0]}</option>
-                        </select>
-                        <span> </span>
-                    </td>
-                    <td>
-                        <label class="l_fixed" for="userid">User Id </label>
-                        <i class="fa-solid fa-id-card i1"></i>
-                        <input required type="text" name="emp_id" id="userid1" value="{row[1]}" >
-                        <span> </span>
-                    </td>
-                    
-                    <td>
-                        <label class="l_fixed" for="dob">Check In</label>
-                        <i class="fa-solid fa-calendar i1"></i>
-                        <input required type="date" name="dob" id="checkin1" value="{row[2]}">
-                        <span> </span>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <label class="l_fixed" for="dob">Check Out</label>
-                        <i class="fa-solid fa-calendar i1"></i>
-                        <input required type="date" name="dob" id="checkout1" value="{row[3]}">
-                        <span> </span>
-                    </td>
-                    
-                    <td>
-                        <!-- <label class="l_move" for="f_name">Status</label> -->
-                        <i class="fa-solid fa-chart-line i1"></i>
-                        <select name="" id="status1">
-                            <option value="{row[4]}">{row[4]}</option>
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
-                        </select>
-                        <span></span>
-                    </td>
-                    <td>
-                        <div class="button">
-                            <button id="save" type="submit" value="Save" style="background-color: rgb(0, 255, 0); color: black;"> <i
-                                    class="fa-solid fa-arrow-up-from-bracket"></i> &nbsp; Submit </button>
-                            <button type="reset" value="Reset" style="background-color: rgb(0, 208, 255); color: black;"><i
-                                    class="fa-solid fa-rotate-left"></i> Reset </button>
-                        </div>
-                    </td>
-                </tr>
-            </table>
-        </form>
-    </div>''')
-              
-                print("</form>")
+                print(*res[0],sep='&&')
+                print('&&data fetching successfully')
             else:
                 print("no data available")
     except Exception as e:
@@ -734,7 +757,7 @@ elif(what == "savetheRoomAllocupdate"):
         print(roomid1,userid1,checkin1,checkout1,status1)
         
         if( roomid1 != None and userid1 != None and checkin1 != None and checkout1 != None and status1 != None):
-            saveRoomAllocUpdate_query = f"update room_allocation SET userid = '{userid1}', checkin = '{checkin1}',checkout = '{checkout1}', status='{status1}' where roomid = '{roomid1}'"
+            saveRoomAllocUpdate_query = f"update room_allocation SET checkin = '{checkin1}',checkout = '{checkout1}', status='{status1}' where roomid = '{roomid1}' and userid = '{userid1}'"
             cur.execute(saveRoomAllocUpdate_query)
             con.commit()
             print("room allocation details successfully updated")
@@ -744,107 +767,25 @@ elif(what == "savetheRoomAllocupdate"):
         print(e)
 
 elif(what == "fetchFeeUpdate"):
-    # print(what)
     try:
         userid = f.getvalue("userid")
         # print(userid + " have gotten")
         if(userid != None):
-            fetch_fee_upd = f"select * from fee_details where userid='{userid}'"
-            cur.execute(fetch_fee_upd)
+            fetch_for_upd_room = f"select * from fee_details where id='{userid}'"
+            # print(fetch_for_upd_room)
+            cur.execute(fetch_for_upd_room)
             res = cur.fetchall()
             if res != []:
-                print("<div style='display:none;'>data fetching successfully</div>")
-                # print(res)
-                print("<span><i class='fa-solid fa-xmark fa-2xl'></i></span>")
-                for row in res:
-                    print(f''' <div class="parent">
-        <h2>Fee Details</h2>
-        <form enctype="multipart/form-data" method="post">
-            
-            <table>
-                <tr>
-                    
-                   
-                    <td>
-                        <label class="l_fixed" for="Id">User Id </label>
-                        <i class="fa-solid fa-id-card i1"></i>
-                        <input type="text" name="emp_id" id="userid1" value="{row[0]}" readonly>
-                        <span> </span>
-                    </td>
-                    <td>
-                        <label class="l_fixed" for="Id">Fee Amount</label>
-                        <input required type="text" name="fee_amount" id="fee_amt1" value="{row[1]}" readonly>
-                    </td>
-                    
-                    <td>
-                        <label class="l_fixed" for="dob">Pay Date</label>
-                        <i class="fa-solid fa-calendar i1"></i>
-                        <input type="date" name="dob" id="paydate1" value="{row[2]}"> 
-                        <span> </span>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <label class="l_fixed" >Pay Mode</label><br>
-                        &nbsp; &nbsp; &nbsp;<input type="radio" name="pay_mode" value="CASH" id="Cash" checked> <label for="Cash">Cash</label> &nbsp; &nbsp;
-                        &nbsp;<input type="radio" name="pay_mode" value="UPI" id="UPI" > <label for="UPI">UPI</label> &nbsp; &nbsp;
-                        &nbsp;<input type="radio" name="pay_mode" value="NEFT" id="NEFT"> <label for="NEFT">NEFT</label>
-                        <span> </span>
-                    </td>
-                    <td>
-                        <label class="l_fixed" for="f_name">Month Name</label>
-                        <i class="fa-solid fa-chart-line i1"></i>
-                      
-                        <select name="" id="month_name1">
-                            <option value="{row[4]}">{row[4]}</option>
-                            <option value="January">January</option>
-                            <option value="February">February</option>
-                            <option value="March">March</option>
-                            <option value="April">April</option>
-                            <option value="May">May</option>
-                            <option value="June">June</option>
-                            <option value="July">July</option>
-                            <option value="August">August</option>
-                            <option value="September">September</option>
-                            <option value="October">October</option>
-                            <option value="November">November</option>
-                            <option value="December">December</option>
-                        </select>
-                        <span></span>
-                    </td>
-                    <td>
-                        <label class="l_move" for="f_name">Status</label>
-                        <i class="fa-solid fa-chart-line i1"></i>
-                        <select id="status1">
-                            <option value="{row[5]}">{row[5]}</option>
-                            <option value="active">Success</option>
-                            <option value="inactive">Failure</option>
-                        </select>
-                        <span></span>
-                    </td>
-                   
-                </tr>
-                <tr>
-                    <td colspan="3">
-                        <div class="button">
-                            <button id="save" type="submit" value="Submit" style="background-color: rgb(0, 255, 0); color: black;"> <i
-                                    class="fa-solid fa-arrow-up-from-bracket"></i> &nbsp; Submit </button>
-                            <button type="reset" value="Reset" style="background-color: rgb(0, 208, 255); color: black;"><i
-                                    class="fa-solid fa-rotate-left"></i> Reset </button>
-                        </div>
-                    </td>
-                </tr>
-            </table>
-        </form>
-    </div>''')
-              
+                print(*res[0],sep='&&')
+                print('&&data fetching successfully!!')
             else:
                 print("no data available")
     except Exception as e:
-        print(e)
+        print(e)  
 
 elif(what == "savetheFeeUpdate"):
     try:
+        id = f.getvalue("id")
         userid1 = f.getvalue("userid1")
         fee_amt1 = f.getvalue("fee_amt1")
         paydate1 = f.getvalue("paydate1")
@@ -852,10 +793,9 @@ elif(what == "savetheFeeUpdate"):
         month_name1 = f.getvalue("month_name1")
         status1 = f.getvalue("status1")
 
-        print(userid1,fee_amt1,paydate1,paymode1,month_name1,status1)
         
         if( userid1 != None and fee_amt1 != None and paydate1 != None and paymode1 != None and month_name1 and status1 != None):
-            saveFeeUpd_query = f"update fee_details SET pay_date = '{paydate1}', pay_mode = '{paymode1}',month_name = '{month_name1}', f_status='{status1}' where userid = '{userid1}'"
+            saveFeeUpd_query = f"update fee_details SET pay_date = '{paydate1}', pay_mode = '{paymode1}',month_name = '{month_name1}', f_status='{status1}', fee_amount='{fee_amt1}' where id = '{id}'"
             cur.execute(saveFeeUpd_query)
             con.commit()
             print("fee details successfully updated")
@@ -871,171 +811,13 @@ elif(what == "fetchUserUpdate"):
         userid = f.getvalue("userid")
         # print(userid + " have gotten")
         if(userid != None):
-            fetch_user_upd = f"select * from user_info where userid='{userid}'"
-            cur.execute(fetch_user_upd)
+            fetch_for_upd_room = f"select * from user_info where userid='{userid}'"
+            # print(fetch_for_upd_room)
+            cur.execute(fetch_for_upd_room)
             res = cur.fetchall()
             if res != []:
-                print("<div style='display:none;'>data fetching successfully</div>")
-                # print(res)
-                print("<span><i class='fa-solid fa-xmark fa-2xl'></i></span>")
-                for row in res:
-                    print(f'''<div class="parent">
-        <h2>Update User Details Form </h2>
-        <form enctype="multipart/form-data" method="post">
-
-            <table>
-                <tr>
-                    <td>
-                        <label class="l_fixed" for="id">User Id </label>
-                        <i class="fa-solid fa-id-card i1"></i>
-                        <input type="text" name="emp_id" id="id1" value="{row[0]}" readonly >
-                        <span> </span>
-                    </td>
-                    <td>
-                        <label class="l_move" for="name">Name</label>
-                        <i class="fa-solid fa-user i1"></i>
-                        <input type="text" id="name1" name="emp_name" value="{row[1]}">
-                        <span> </span>
-                    </td>
-                    <td>
-                        <label class="l_move" for="contact">Contact Number</label>
-                        <i class="fa-solid fa-phone i1"></i>
-                        <input type="text" name="contact" id="contact1" value="{row[2]}">
-                        <span></span>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <label for="" class="l_fixed" style="left: 1rem;">Gender : </label> <br>
-                        &nbsp; &nbsp; &nbsp;<input type="radio" name="gender" value="male" id="male" checked> <label
-                            for="male">Male</label> &nbsp; &nbsp;
-                        &nbsp;<input type="radio" name="gender" value="female" id="female"> <label
-                            for="female">Female</label> &nbsp; &nbsp;
-                        &nbsp;<input type="radio" name="gender" value="other" id="other"> <label
-                            for="other">Other</label>
-                    </td>
-                    <td>
-                        <label class="l_fixed" for="dob">Date Of Birth</label>
-                        <i class="fa-solid fa-calendar i1"></i>
-                        <input type="date" name="dob" id="dob1" value="{row[4]}">
-                        <span> </span>
-                    </td>
-                    <td>
-                        <select name="" id="bloodgrp1">
-                            <option value="{row[5]}">{row[5]}</option>
-                            <option value="0">O+</option>
-                            <option value="0">O-</option>
-                            <option value="0">A+</option>
-                            <option value="0">A-</option>
-                            <option value="0">B+</option>
-                            <option value="0">B-</option>
-                            <option value="0">AB+</option>
-                            <option value="0">AB-</option>
-                        </select>
-                    </td>
-
-                </tr>
-                <tr>
-                    <td>
-                        <label class="l_move" for="f_name">Father's Name</label>
-                        <i class="fa-solid fa-user i1"></i>
-                        <input type="text" name="father_name" id="f_name1" value="{row[6]}">
-                        <span></span>
-                    </td>
-                    <td>
-                        <label class="l_move" for="m_name">Mother's Name</label>
-                        <i class="fa-solid fa-user i1"></i>
-                        <input type="text" name="father_name" id="m_name1" value="{row[7]}">
-                        <span></span>
-                    </td>
-                    <td>
-                        <label class="l_move" for="p_contact">Parent Contact Number</label>
-                        <i class="fa-solid fa-phone i1"></i>
-                        <input type="text" name="father_name" id="p_contact1" value="{row[8]}">
-                        <span></span>
-                    </td>
-
-                </tr>
-                <tr>
-
-                    <td>
-                        <label for="pic" class="l_fixed">Photo</label>
-                        <input type="file" id="pic1"  name="emp_pic" style="padding-top: 0.8rem; padding-left: 1.5rem;" accept="image/*" readonly>
-                    </td>
-                    <td>
-                        <label class="l_move" for="aadhar">Aadhar Number</label>
-                        <i class="fa-solid fa-id-card i1"></i>
-                        <input type="text" name="aadhar" maxlength="12" minlength="12" id="aadhar1" value="{row[10]}">
-                        <span> </span>
-                    </td>
-                    <td>
-                        <label class="l_move" for="street">Street</label>
-                        <i class="fa-solid fa-street-view i1"></i>
-                        <input type="text" name="street" id="street1" value="{row[11]}">
-                        <span> </span>
-                    </td>
-
-                </tr>
-                <tr>
-
-
-
-
-                    <td>
-                        <label class="l_move" for="dit">District, State</label>
-                        <i class="fa-solid fa-building i1"></i>
-                        <input type="text" name="dict" id="dit1" value="{row[12]}">
-                        <span> </span>
-                    </td>
-                    <td>
-                        <label class="l_move" for="pin">Pincode</label>
-                        <i class="fa-solid fa-location-pin i1"></i>
-                        <input type="text" name="pin" maxlength="6" minlength="6" id="pin1" value="{row[13]}">
-                        <span> </span>
-                    </td>
-
-
-                    <td>
-                        <label class="l_move" for="local_guard">Local Guardian </label>
-                        <i class="fa-solid fa-user i1"></i>
-                        <input type="text" name="father_name" id="local_guard1" value="{row[14]}">
-                        <span></span>
-                    </td>
-                </tr>
-                <tr>
-
-                </tr>
-                <td>
-                    <label class="l_move" for="local_guard_contact">Local Guardian Number</label>
-                    <i class="fa-solid fa-phone i1"></i>
-                    <input type="text" name="father_name" id="local_guard_contact1" value="{row[15]}">
-                    <span></span>
-                </td>
-                <td colspan="2">
-                    <label class="l_move" for="local_guard_addr">Local Guardian Address</label>
-                    <i class="fa-solid fa-map-location-dot i1"></i>
-                    <input type="text" name="father_name" id="local_guard_addr1" value="{row[16]}">
-                    <span></span>
-                </td>
-
-
-
-                <tr>
-                    <td colspan="3">
-                        <div class="button">
-                            <button id="save" type="submit" value="Submit"
-                                style="background-color: rgb(0, 255, 0); color: black;"> <i
-                                    class="fa-solid fa-arrow-up-from-bracket"></i> &nbsp; Save </button>
-                            <button type="reset" value="Reset"
-                                style="background-color: rgb(0, 208, 255); color: black;"><i
-                                    class="fa-solid fa-rotate-left"></i> Reset </button>
-                        </div>
-                    </td>
-                </tr>
-            </table>
-        </form>
-    </div>''')
-              
+                print(*res[0],sep='&&')
+                print('&&data fetching successfully!!')
             else:
                 print("no data available")
     except Exception as e:
@@ -1060,11 +842,6 @@ elif(what == "savetheUserUpdate"):
         user_local_guard1 = f.getvalue("emp_local_guard1")
         user_local_guard_cont1 = f.getvalue("emp_local_guard_cont1")
         user_local_guard_addr1 = f.getvalue("emp_local_guard_addr1")
-
-        # print(user_id1,user_name1,user_contact1,user_dob1,user_gender1)
-        # print(user_father1,user_blood1,user_mother1,user_par_contact1,user_aadhar1)
-        # print(user_photo1)
-        # print(user_street1,user_dist_state1,user_pincode1,user_local_guard1,user_local_guard_cont1,user_local_guard_addr1 )
         
         if( user_name1 != None and user_contact1 != None and user_dob1 != None
         and user_gender1 != None and user_dob1 != None and user_blood1 != None
@@ -1073,126 +850,59 @@ elif(what == "savetheUserUpdate"):
         and user_dist_state1 != None and user_pincode1 != None and user_local_guard1 != None and
         user_local_guard_cont1 != None and user_local_guard_addr1 != None):
             
-            saveUserUpd_query = f"update user_info SET username = '{user_name1}', user_cont = '{user_contact1}',user_gender = '{user_gender1}', user_dob='{user_dob1}', user_blood_grp='{user_blood1}', user_f_name='{user_father1}', user_m_name='{user_mother1}', user_p_contact='{user_par_contact1}', user_pic='{user_photo1}' , user_addhar='{user_aadhar1}', user_street='{user_street1}', user_dstate='{user_dist_state1}', user_pin='{user_pincode1}', user_local_guard='{user_local_guard1}' , user_local_guard_cont='{user_local_guard_cont1}', user_local_guard_add='{user_local_guard_addr1}' where userid = '{user_id1}'"
-            cur.execute(saveUserUpd_query)
-            con.commit()
+            # saveUserUpd_query = f"update user_info SET username = '{user_name1}', user_cont = '{user_contact1}',user_gender = '{user_gender1}', user_dob='{user_dob1}', user_blood_grp='{user_blood1}', user_f_name='{user_father1}', user_m_name='{user_mother1}', user_p_contact='{user_par_contact1}', user_pic='{user_photo1}' , user_addhar='{user_aadhar1}', user_street='{user_street1}', user_dstate='{user_dist_state1}', user_pin='{user_pincode1}', user_local_guard='{user_local_guard1}' , user_local_guard_cont='{user_local_guard_cont1}', user_local_guard_add='{user_local_guard_addr1}' where userid = '{user_id1}'"
+            # cur.execute(saveUserUpd_query)
+            # con.commit()
+            saveUserUpd_query = """
+                UPDATE user_info 
+                SET username = %s, user_cont = %s, user_gender = %s, user_dob = %s, user_blood_grp = %s, 
+                user_f_name = %s, user_m_name = %s, user_p_contact = %s, user_pic = %s, user_addhar = %s, 
+                user_street = %s, user_dstate = %s, user_pin = %s, user_local_guard = %s, 
+                user_local_guard_cont = %s, user_local_guard_add = %s 
+                WHERE userid = %s
+            """
+
+            # Execute the query with the provided data
+            cur.execute(saveUserUpd_query, (
+                user_name1, user_contact1, user_gender1, user_dob1, user_blood1,
+                user_father1, user_mother1, user_par_contact1, user_photo1,
+                user_aadhar1, user_street1, user_dist_state1, user_pincode1,
+                user_local_guard1, user_local_guard_cont1, user_local_guard_addr1,
+                user_id1
+            ))
+
             print("user details successfully updated")
         else:
             print("no field should be empty")
     except Exception as e:
         print(e)
 
-# fetching data on click of search button or searching data
-elif(what == "fetch_room_conditions"):
-    # print(d)
+elif (what == 'roomallocationservice'):
     try:
-        room_no = f.getvalue("room_no")
-        roomtype = f.getvalue("roomtype")
-        total_bed = f.getvalue("total_bed")
-        status = f.getvalue("status")
-        
-
-        # Construct conditions for the SQL query
-        conditions = []
-        if room_no != None:
-            conditions.append(f"room_no = '{room_no}'")
-        if roomtype is not None:
-            conditions.append(f"room_type = '{roomtype}'")
-        if total_bed is not None:
-            conditions.append(f"total_bed <= '{total_bed}'")
-        if status is not None:
-            conditions.append(f"status = '{status}'")
-        
-
-        # Construct the SQL query
-        fetch_room_query = "SELECT * FROM room_details"
-        if conditions:
-            fetch_room_query += " WHERE " + " AND ".join(conditions)
-       
-        # print(fetch_user_query)
-
-
-        cur.execute(fetch_room_query)
-        srr = cur.fetchall()
-        if srr != []:
-            # print("<br>yes")
-            print("<table class='tab'>")
-            print("<tr>")
-            print("<th>Room No</th>")
-            print("<th>Room Type</th>")
-            print("<th>Total Bed</th>")
-            print("<th>Status Gender</th>")
-            print("<th colspan='2' style='text-align:center;'>action</th>")
-            print("</tr>")
-            for row in srr:
-                # print(row)
-                print("<tr>")
-                print(f'<td>{row[0]}</td>')
-                print(f'<td>{row[1]}</td>')
-                print(f'<td>{row[2]}</td>')
-                print(f'<td>{row[3]}</td>')
-                
-                print(f"<td><i class='fa-solid fa-pen-to-square fa-xl edit'  id=\"edit\" ></i></td>")
-                print(f"<td><i class='fa-solid fa-trash-can fa-xl del'></i></td>")
-                print("</tr>")
-            print("</table>")
-            print("<p style='display:none;'>room details fetched successfully</p>")
+        cur.execute("select distinct roomid,userid,status from room_allocation")
+        res = cur.fetchall()
+        if res != []:
+            room_no=set()
+            user_id=set()
+            status=set()
+            for row in res:
+                room_no.add(row[0])
+                user_id.add(row[1])
+                status.add(row[2])
+            print('<option value="">-- Select Room ID --</option>')
+            for row in room_no:
+                print(f"<option value='{row}'>{row}</option>")
+            print('&&')
+            print('<option value="">-- Select User ID --</option>')
+            for row in user_id:
+                print(f"<option value='{row}'>{row}</option>")
+            print('&&')
+            print('<option value="">-- Select Room Status --</option>')
+            for row in status:
+                print(f"<option value='{row}'>{row}</option>")
+            print('&&')
+            print('all detail fetched!!')
         else:
-            # print("no")
-            print("no data available")
-    except Exception as e:
-        print(e)
-
-# deleting product category on click of delete button
-elif(what == "deleteroom"):
-    try:
-        roomid = f.getvalue("roomno")
-        delete_room_query = f"delete from room_details where room_no = '{roomid}'"
-        print(delete_room_query)
-        cur.execute(delete_room_query)
-        con.commit()
-        print("room deleted successfully")
-    except Exception as e:
-        print(e)
-
-
-elif(what == "fetchForRoomUpdate"):
-    # print(what)
-    try:
-        roomid = f.getvalue("roomid")
-        # print(userid + " have gotten")
-        if(roomid != None):
-            fetch_for_upd_room = f"select * from room_details where room_no='{roomid}'"
-            # print(fetch_for_upd_room)
-            cur.execute(fetch_for_upd_room)
-            res = cur.fetchall()
-            if res != []:
-                print("<div style='display:none;'>data fetching successfully</div>")
-                # print(res)
-                print("<span><i class='fa-solid fa-xmark fa-2xl'></i></span>")
-                for row in res:
-                    print(f''' ''')
-              
-            else:
-                print("no data available")
-    except Exception as e:
-        print(e)
-
-elif(what == "savetheRoomupdate"):
-    try:
-        room_no = f.getvalue("room_no")
-        room_type = f.getvalue("room_type")
-        t_bed = f.getvalue("t_bed1")
-        status = f.getvalue("status1")
-
-        print(room_no,room_type,t_bed,status)
-        
-        if( room_type != None and t_bed != None and status != None):
-            saveRoomUpdate_query = f"update room_details SET room_type = '{room_type}', total_bed = '{t_bed}',status = '{status}' where room_no = '{room_no}'"
-            cur.execute(saveRoomUpdate_query)
-            con.commit()
-            print("room details successfully updated")
-        else:
-            print("no field should be empty")
+            print()
     except Exception as e:
         print(e)

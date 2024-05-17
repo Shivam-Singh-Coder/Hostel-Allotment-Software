@@ -173,11 +173,11 @@
                             },
                             success:function(data){
                                 var dat=data.split('&&');
-                                alert(dat[0])
                                 if (dat){
-                                    swal('Success',dat[0],'success');}
-                                if(dat[1]==0)
-                                    location.reload();
+                                    swal('Message',dat[0],'info').then((value) => {
+                                        location.reload()
+                                      });
+                                }
                             }
                         });
                     }
@@ -206,6 +206,12 @@
                     $('#dob').attr('max',cd);
             }
         });
+        setInterval(logout,1000);
+        function logout(){
+          if (!sessionStorage.getItem("uname")){
+            location.href='index.html'
+          }
+        }
     </script>
 </body>
 

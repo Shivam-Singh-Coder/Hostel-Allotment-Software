@@ -19,22 +19,23 @@
   <div class="parent">
     <h2>
       <i class="fa-solid fa-circle-arrow-left back" onclick="history.back();" title="Go Back"></i>
-      Rules
+      <i class="fa-solid fa-home back" onclick="location.href='Dashboard.html'" title="Go Dashboard" style="margin-left: 5rem;"></i>
+      <span>Rules Entry</span><input type="button" value="Search" id="search_user" onclick="location.href='Rulesservice.html'" />
     </h2>
     <form enctype="multipart/form-data" method="post">
       <table>
         <tr>
           <td>
-            <label class="l_fixed" for="Id">User Id </label>
+            <label class="l_move" for="id">User Id </label>
             <i class="fa-solid fa-id-card i1"></i>
-            <input required type="text" name="emp_id" id="id" value="">
+            <input required type="text" name="emp_id" id="id" value="" onfocus="$(this).siblings('label').css({'top':'0%'});" onfocusout="$(this).siblings('label').css({'top': ($(this).val().trim() == '') ? '38%' : '0%'});" list="us_brow">
+            <datalist id="us_brow"></datalist>
             <span> </span>
           </td>
           <td colspan="2">
-            <label class="l_fixed" for="Id">Rules</label>
+            <label class="l_move" for="rules_area">Rules</label>
             <i class="fa-solid fa-list i1"></i>
-            <input type="text" id="rules_area">
-            <!-- <textarea name="" id="rules_area"></textarea> -->
+            <input type="text" id="rules_area" onfocus="$(this).siblings('label').css({'top':'0%'});" onfocusout="$(this).siblings('label').css({'top': ($(this).val().trim() == '') ? '38%' : '0%'});">
           </td>
         </tr>
 
@@ -59,5 +60,77 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <script src="scripts/rules.js"></script>
-
+<script type="text/javascript">
+  $(document).ready(function(){
+    var user_id = sessionStorage.getItem("rules_user");
+    if (user_id) {
+      $.ajax({
+        method: "post",
+        url: "pythonfile/user.py",
+        data: {
+          what: "fetchForRulesUpdate",
+          userid: user_id,
+        },
+        success: function (data) {
+          console.log(data);
+          if (data.includes("data fetching successfully!!")) {
+            sessionStorage.removeItem('rules_user');
+            var data_val = data.split("&&");
+            $('.parent h2 span').html('Rules Update');
+            $("#id").val(data_val[0].trim());
+            $("#id").focus();
+            $("#id").attr('disabled',true);
+            $("#rules_area").val(data_val[1].trim());
+            $("#rules_area").focus();
+            $(".button").html('<button type="button" value="Submit" style="background-color: rgb(0, 255, 0); color: black" id="saveData" > <i class="fa-solid fa-arrow-up-from-bracket"></i> &nbsp; Update </button>');
+          }
+          else{
+            swal("Error", "Something went wrong!", "error");
+          }
+        },
+      });
+    }
+    $(document).on("click","#saveData", function (e) {
+      e.preventDefault();
+      $.ajax({
+        method: "post",
+        url: "pythonfile/user.py",
+        data: {
+          what: "savetheRuleupdate",
+          userid: $("#id").val().trim(),
+          rules: $("#rules_area").val().trim(),
+        },
+        success: function (data) {
+          console.log(data);
+          if (data.includes("ruleuser successfully updated")) {
+            swal({
+              title: "Success!",
+              text: "Rules updated successfully!!",
+              icon: "success",
+            })
+            .then((willDelete) => {
+              if (willDelete) {
+                sessionStorage.removeItem('rules_user');
+                  location.reload();
+              }
+            });
+          }
+          else {
+            swal({
+              title: "Failed!",
+              text: "somethings error",
+              icon: "error",
+            });
+          }
+        },
+      });
+    });
+  });
+  setInterval(logout,1000);
+      function logout(){
+        if (!sessionStorage.getItem("uname")){
+          location.href='index.html'
+        }
+      }
+</script>
 </html>

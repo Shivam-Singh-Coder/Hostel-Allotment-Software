@@ -25,59 +25,65 @@
           onclick="history.back();"
           title="Go Back"
         ></i>
-         Room Details Form <input type="button" value="Search" id="search_user">
+        <i class="fa-solid fa-home back" onclick="location.href='Dashboard.html'" title="Go Dashboard" style="margin-left: 5rem;"></i>
+        <span>Room Details Entry</span>
+        <input type="button" value="Search" id="search_user" />
       </h2>
-      <form enctype="multipart/form-data" method="post">
+      <form>
         <table>
-          <tr><td>
+          <tr>
+            <td>
               <label class="l_move" for="room_no">Room No</label>
               <i class="fa-solid fa-people-roof i1"></i>
               <input
                 required
-                type="text"
+                type="number"
                 id="room_no"
                 name="room_no"
-                
+                onfocus="$(this).siblings('label').css({'top':'0%'});"
+                onfocusout="$(this).siblings('label').css({'top': ($(this).val().trim() == '') ? '38%' : '0%'});"
               />
               <span> </span>
             </td>
             <td>
-              <select name="" id="room_type">
+              <label class="l_fixed" for="room_type" hidden>Room Type</label>
+              <select name="" id="room_type" onchange="$(this).siblings('label').removeAttr('hidden')">
                 <option value="">------ Select Room Type ------</option>
-                <option value="ac">ac</option>
-                <option value="non ac">non ac</option>
+                <option value="AC">AC</option>
+                <option value="NON-AC">Non-AC</option>
               </select>
               <span></span>
             </td>
             <td>
-                <label class="l_move" for="t_bed">Total Bed</label>
-                <i class="fa-solid fa-bed i1"></i>
-                <input
-                  required
-                  type="text"
-                  name="father_name"
-                  id="t_bed"
-                />
-                <span></span>
-              </td>
+              <label class="l_move" for="t_bed">Total Bed</label>
+              <i class="fa-solid fa-bed i1"></i>
+              <input
+                required
+                type="number"
+                name="father_name"
+                id="t_bed"
+                onfocus="$(this).siblings('label').css({'top':'0%'});"
+                onfocusout="$(this).siblings('label').css({'top': ($(this).val().trim() == '') ? '38%' : '0%'});"
+              />
+              <span></span>
+            </td>
           </tr>
-       
 
           <tr>
             <td>
-                <!-- <label class="l_move" for="status">Status</label> -->
-                <select name="" id="status">
-                  <option value="">------ Status ------</option>
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
-                </select>
-                <!-- <span></span> -->
-                <span></span>
+              <label class="l_fixed" for="status_ent" hidden>Room Status</label>
+              <select name="" id="status_ent" onchange="$(this).siblings('label').removeAttr('hidden')">
+                <option value="">------ Select Room Status ------</option>
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+              </select>
+              <!-- <span></span> -->
+              <span></span>
             </td>
             <td colspan="2">
               <div class="button">
                 <button
-                  type="submit"
+                  type="button"
                   value="Submit"
                   style="background-color: rgb(0, 255, 0); color: black"
                   id="room_submit"
@@ -100,6 +106,85 @@
     </div>
   </body>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-<script src="scripts/roomdetails.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <script src="scripts/roomdetails.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function(){
+      var room_id = sessionStorage.getItem("room_id");
+      if (room_id) {
+        $.ajax({
+          method: "post",
+          url: "pythonfile/user.py",
+          data: {
+            what: "fetchForRoomUpdate",
+            roomid: room_id,
+          },
+          success: function (data) {
+            console.log(data);
+            if (data.includes("data fetching successfully!!")) {
+              sessionStorage.removeItem('room_id');
+              var data_val = data.split("&&");
+              $('.parent h2 span').html('Room Details Update')
+              $("#room_no").val(parseInt(data_val[0]));
+              $("#room_no").focus();
+              $("#room_no").attr('disabled',true);
+              $("#room_type").val(data_val[1].trim());
+              $("#room_type").change();
+              $("#t_bed").val(parseInt(data_val[2]));
+              $("#t_bed").focus();
+              $("#status_ent").val(data_val[3].trim());
+              $("#status_ent").change();
+              $(".button").html('<button type="button" value="Submit" style="background-color: rgb(0, 255, 0); color: black" id="saveData" > <i class="fa-solid fa-arrow-up-from-bracket"></i> &nbsp; Update </button>');
+            }
+            else{
+              swal("Error", "Something went wrong!", "error");
+            }
+          },
+        });
+      }
+      $(document).on("click","#saveData", function (e) {
+        e.preventDefault();
+        $.ajax({
+          method: "post",
+          url: "pythonfile/user.py",
+          data: {
+            what: "savetheRoomupdate",
+            room_no: $("#room_no").val().trim(),
+            room_type: $("#room_type").val().trim(),
+            t_bed1: $("#t_bed").val().trim(),
+            status1: $("#status_ent").val().trim(),
+          },
+          success: function (data) {
+            console.log(data);
+            if (data.includes("room details successfully updated")) {
+              swal({
+                title: "Success!",
+                text: "Room Details updated successfully",
+                icon: "success",
+              })
+              .then((willDelete) => {
+                if (willDelete) {
+                  sessionStorage.removeItem('room_id');
+                    location.reload();
+                }
+              });
+            }
+            else {
+              swal({
+                title: "Failed!",
+                text: "somethings error",
+                icon: "error",
+              });
+            }
+          },
+        });
+      });
+    });
+    setInterval(logout,1000);
+      function logout(){
+        if (!sessionStorage.getItem("uname")){
+          location.href='index.html'
+        }
+      }
+  </script>
 </html>

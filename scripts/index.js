@@ -108,11 +108,14 @@ $(document).ready(function () {
             t3: $("#tab2 #secq").val().trim(),
             t4: $("#tab2 #ans").val().trim(),
             t5: $("#tab2 #pas").val().trim(),
+            t6:$('input[name="a"]:checked').val(),
           },
           success: function (data) {
             data = data.split("&&");
-            swal('Success',data[0],'success');
-            if (data[1] == 0) location.reload();
+            swal('Message',data[0],'info').then((value) => {
+              location.reload()
+            });
+            // if (data[1] == 0)location.reload();
           },
         });
       }
@@ -137,6 +140,7 @@ $(document).ready(function () {
               window.location='Dashboard.html';
               sessionStorage.setItem('uname',data[0].trim());
               sessionStorage.setItem('email',data[1].trim());
+              sessionStorage.setItem('user_type',data[2].trim());
           } else {
             swal('Error',"Invalid Username or Password!!",'error');
           }
@@ -174,8 +178,10 @@ $(document).ready(function () {
           },
           success: function (data) {
             data = data.split("&&");
-            swal('Success',data[0],'success');
-            if (data[1] == 0) location.reload();
+            swal('Message',data[0],'info').then((value) => {
+              location.reload()
+            });
+            // if (data[1] == 0) location.reload();
           },
         });
       }

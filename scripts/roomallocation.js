@@ -3,7 +3,7 @@ $(document).ready(function () {
 
     $("#search_user").on("click",function(e){
         e.preventDefault();
-        window.location.href = "room_alloc_search.html";
+        window.location.href = "Roomallocationservice.html";
     })
 
     
@@ -24,50 +24,44 @@ $(document).ready(function () {
         url: 'pythonfile/user.py',
         data: {
             what: "fetchroomid",
+            user:'Yes'
         },
         success: function (data) {
             console.log(data)
-            $("#roomid").append(data)
-        }
-    });
-
-    // fetching userid for searching operation here
-    $.ajax({
-        method: 'post',
-        url: 'pythonfile/user.py',
-        data: {
-            what: "fetchuserid",
-        },
-        success: function (data) {
-            console.log(data)
-            $("#userid").append(data)
+            if (data.includes('all detail fetched!!')){
+                var data_val=data.split('&&');
+                $('#roomid').html(data_val[0]);
+                $('#us_brow').html(data_val[4].trim());
+            }
+            else{
+                swal('Warning','Please Do One Entry In Room Details and User Details!!','warning')
+            }
         }
     });
 
 
+    $("#userid").change(function () {
+        // e.preventDefault();
 
-    // $("#userid").change(function () {
-    //     // e.preventDefault();
+        $.ajax({
+            method: 'post',
+            url: 'pythonfile/user.py',
+            data: {
+                what: "checkuserid",
+                userid: $("#userid").val().trim()
+            },
+            success: function (data) {
+                console.log(data)
+                if (data.includes("Userid doesnot exist"))
+                    swal({
+                        title: "Failed!",
+                        text: "Userid doesnot exit",
+                        icon: "error",
+                    });
+            }
+        });
 
-    //     $.ajax({
-    //         method: 'post',
-    //         url: 'pythonfile/user.py',
-    //         data: {
-    //             what: "checkuserid",
-    //             userid: $("#userid").val()
-    //         },
-    //         success: function (data) {
-    //             console.log(data)
-    //             if (data.includes("Userid doesnot exist"))
-    //                 swal({
-    //                     title: "Failed!",
-    //                     text: "Userid doesnot exit",
-    //                     icon: "error",
-    //                 });
-    //         }
-    //     });
-
-    // });
+    });
 
 
 
@@ -80,11 +74,11 @@ $(document).ready(function () {
             url: 'pythonfile/user.py',
             data: {
                 what: "room_allocation",
-                room_no: $("#roomid").val(),
-                userid: $('#userid').val(),
-                checkin: $("#checkin").val(),
-                checkout: $("#checkout").val(),
-                status: $("#status").val(),
+                room_no: $("#roomid").val().trim(),
+                userid: $('#userid').val().trim(),
+                checkin: $("#checkin").val().trim(),
+                checkout: $("#checkout").val().trim(),
+                status: $("#status").val().trim(),
             },
             success: function (data) {
                 console.log(data)
@@ -94,15 +88,19 @@ $(document).ready(function () {
                         title: "Yeah!",
                         text: "Room allocated Successfully!",
                         icon: "success",
+                    })
+                    .then((value)=>{
+                        location.reload();
+                    })
+                }
+                else if (data.includes("already exists!!")) {
+                    swal({
+                        title: "Warning!",
+                        text: "Room Allocated already for this room number and user id!!",
+                        icon: "warning",
                     });
-
-                    $("#roomid").val("");
-                    $('#userid').val("");
-                    $("#checkin").val("");
-                    $("#checkout").val("");
-                    $("#status").val("");
-
-                } else if (data.includes("one of the field is empty")) {
+                }
+                else if (data.includes("one of the field is empty")) {
                     swal({
                         title: "Failed!",
                         text: "One of the field is empty!",
@@ -143,11 +141,11 @@ $(document).ready(function () {
             url: 'pythonfile/user.py',
             data: {
                 what: "fetch_room_allocation_conditions",
-                roomid: $('#roomid').val(),
-                userid: $('#userid').val(),
-                checkin: $('#checkin').val(),
-                checkout: $('#checkout').val(),
-                status: $('#status').val(),
+                roomid: $('#roomid').val().trim(),
+                userid: $('#userid').val().trim(),
+                checkin: $('#checkin').val().trim(),
+                checkout: $('#checkout').val().trim(),
+                status: $('#status').val().trim(),
             },
             success: function (data) {
                 console.log(data);
@@ -161,7 +159,7 @@ $(document).ready(function () {
                     });
                 } else if (data.includes("room allocation fetched successfully")) {
                     $('.below_card').css({ "display": "block" })
-                    $('.table_container').html(data)
+                    $('#table-container').html(data)
 
                 } else if (data.includes("no data available")) {
                     $('.below_card').css({ "display": "none" })
@@ -221,82 +219,12 @@ $(document).ready(function () {
 
                 $("#edit").on("click", function () {
                     let rid = $(this).closest('tr').children('td:first-child').text();
-                    // console.log(pid);
-                    $.ajax({
-                        method: 'post',
-                        url: 'pythonfile/user.py',
-                        data: {
-                            what: "fetchForRoomAllocUpdate",
-                            roomid: rid
-                        },
-                        success: function (data) {
-                            console.log(data);
-                            if (data.includes("data fetching successfully")) {
-                                $(".form_placeholder").css({ "display": "block" })
-                                $(".form_placeholder").html(data)
-
-
-
-
-
-
-                                // code for saving the updated the data when use click on update button
-                                $("#save").on("click", function (e) {
-                                    e.preventDefault();
-                                    d = "savetheRoomAllocupdate"
-
-
-                                    $.ajax({
-                                        method: 'post',
-                                        url: 'pythonfile/user.py',
-                                        data: {
-                                            what: d,
-                                            roomid1: $("#roomid1").val(),
-                                            userid1: $("#userid1").val(),
-                                            checkin1: $("#checkin1").val(),
-                                            checkout1: $("#checkout1").val(),
-                                            status1: $("#status1").val(),
-                                        },
-                                        success: function (data) {
-                                            // window.location.href = 'showData.html'
-                                            console.log(data);
-
-                                            if (data.includes("room allocation details successfully updated")) {
-                                                swal({
-                                                    title: "Success!",
-                                                    text: "Room Allocation Updated Successfully",
-                                                    icon: "success",
-                                                });
-                                                $('.form_placeholder').css({ "display": "none" })
-                                            } else {
-                                                swal({
-                                                    title: "Failed!",
-                                                    text: "somethings error",
-                                                    icon: "error",
-                                                });
-                                            }
-                                        },
-                                    });
-                                })
-
-
-                            }
-
-                            // on click of cross icon
-                            $(".form_placeholder .fa-xmark").on("click", function () {
-                                $(".form_placeholder").css({ "display": "none" });
-                            })
-
-
-                        },
-                    });
+                    let usid=$(this).closest('tr').children('td').eq(1).text();
+                    sessionStorage.setItem('room_allocate',rid);
+                    sessionStorage.setItem('room_allocate_us',usid);
+                    location.href='Roomallocation.html';
                 });
-
-
-
             },
         });
     });
-
-
 });

@@ -1,11 +1,4 @@
-*{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-
-.parent{
+.service {
     background-color: white;
     /* border: 1px solid red; */
     width: 95%;
@@ -14,16 +7,19 @@
     border-radius: 1%;
     padding: 0.7rem;
     overflow: hidden;
-    margin-top: 2rem;
 }
-.parent h2{
+
+.service h2 {
     position: relative;
     padding: 0.5rem;
     font-size: 2rem;
+    text-align: left;
     text-align: center;
     letter-spacing: 1px;
     border-radius: 0.5rem;
-    background-color: rgb(87, 168, 255);
+    padding-left: 1.2rem;
+    background-color: rgba(87, 168, 255, 0.8);
+    /* background-color: rgb(84, 210, 241); */
     color: white;
     text-shadow: 1px 1px 2px black;
     /* raja Css */
@@ -31,7 +27,7 @@
     /* align-items: center; */
     /* justify-content: space-between; */
 }
-.parent h2 .back{
+.service h2 .back{
     position: absolute;
     top: 0.5rem;
     left: 0.5rem;
@@ -43,7 +39,8 @@
         scale: 1.1;
     } 
 }
-.parent h2 button{
+
+.service h2 button {
     float: right;
     font-size: 1.2rem;
     background-color: #fff;
@@ -68,37 +65,51 @@
         border: 2px solid #4285f4;
     }
 }
-.parent table{
-    width: 100%;
+
+.service table {
+    width: 100% !important;
     padding: 1.7rem;
 }
-.parent table td{
+
+.service table td {
     position: relative;
+    height: 5rem;
     width: 33.3%;
-    height: 7rem;
     padding: 1rem;
+    /* border: solid 1px red; */
 }
-.parent table td label{
-   
+
+.service table td select {
+    width: 100%;
+    height: 60%;
+    text-align: center;
+    font-size: 1.1rem;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.7);
+    border-radius: 0.5rem;
+}
+
+.service table td input {
+    height: 60%;
+    width: 100%;
     font-size: 1.2rem;
-    color: black;
-    background-color: white;
+    /* padding-left: 4rem; */
+    border: none;
+    outline: none;
+    box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.7);
+    border-radius: 0.5rem;
 }
-.parent table td .l_move{
+.service table td .l_move{
     position: absolute;
     top: 38%;
     cursor: text;
     left: 4.5rem;
     transition: 0.5s;
-}
-.parent table td .l_fixed{
-    position: absolute;
-    top: 0.9rem;
-    left: 2.5rem;
-    color: rgb(76, 76, 76);
     font-size: 1.2rem;
 }
-.parent table td .i1{
+.service table td .i1{
     position: absolute;
     top: 40%;
     /* top: 45%; */
@@ -106,83 +117,30 @@
     color: rgb(76, 76, 76);
     font-size: 1.2rem;
 }
-.parent table td input[type='text'],
-.parent table td input[type='date'],
-.parent table td input[type='time'],
-.parent table td input[type='email'],
-.parent table td input[type='file'],
-.parent table td input[type='number'],
-.parent table td input[type='month'] {
-    height: 70%;
-    width: 100%;
+.service table td .l_fixed {
+    position: absolute;
+    top: 1.2rem;
+    left: 2.5rem;
+    color: rgb(76, 76, 76);
     font-size: 1.2rem;
-    padding-left:3rem;
-    border: none;
-    outline: none;
-    box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.7) ;
-    border-radius: 0.5rem;
-}
-.parent table td textarea{
-    width: 100%;
-    resize: none;
-    overflow-x: auto;
-    border: none;
-    box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.7) ;
-    outline: none;
-    padding: 1rem;
-    font-size: 1.2rem;
-    line-height: 1.7rem;
-}
-.parent table td input[type='file']::-webkit-file-upload-button{
-    background-color: white;
-    font-size: 1rem;
-    border: 1px solid grey;
-    padding: 0.2rem 1rem;
-    margin-right: 1rem;
-    color: blue;
-    border: 1px solid blue;
-    cursor: pointer;
-    padding-left: 2rem;
-}
-.parent table td .upload{
     position: absolute;
     font-size: 1.2rem;
-    top: 10%;
-    color: rgba(0, 0, 255, 0.824);
-    left: 2.3rem;
-}
-.parent table td select{
-    height: 70%;
-    width: 100%;
-    font-size: 1.2rem;
-    text-align: center;
-    border: none;
-    outline: none;
-    box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.7) ;
-    border-radius: 0.5rem;
-}
-select option{
-    font-size: 1rem;
-    line-height: 3rem;
+    color: black;
+    background-color: white;
+    visibility: hidden;
 }
 
-.parent table td span{
-    position: absolute;
-    bottom: 0;
-    right: 5%;
-    font-size: 1.2rem;
-    color: red;
-    font-weight: 500;
-}
-.parent table td .button{
+.service table td .button {
     /* border: 1px solid red; */
     width: 100%;
     /* margin-left: 25%; */
     display: flex;
     align-items: center;
-    justify-content: space-evenly;
+    justify-content: center;
+    gap:5rem;
 }
-.parent table td .button button{
+
+.service table td .button button {
     font-size: 1.2rem;
     padding: 0.5rem 1rem;
     cursor: pointer;
@@ -199,43 +157,83 @@ select option{
     }
 }
 
-#search_user{
-    padding: 10px 25px;
+.data {
     background-color: white;
-    color: #4285f4;
-    border-radius: 8px;
-    float: right;
-    margin-right: 10px;
+    /* border: 1px solid red; */
+    width: 95%;
+    margin: 2rem auto;
+    box-shadow: 0px 0px 5px black;
+    border-radius: 1%;
+    padding: 0.7rem;
+    overflow: auto;
+}
+
+.data h5 {
+    background-color: rgb(87, 168, 255);
+    color: white;
+    text-align: left;
+    padding: 0.8rem;
+}
+
+.data table {
+    border: 1px solid blue;
+    border-collapse: collapse;
+}
+
+.data table thead th {
+    padding: 1rem;
+    background-color: skyblue;
+    font-size: 1.2rem;
+    width: auto;
+    text-align: center;
+    border: 1px solid black;
+}
+
+.data table tbody td {
+    padding: 0.5rem;
+    text-align: center;
+    font-size: 1.2rem;
+    border: 1px solid black;
+    color: black;
+}
+
+.data table tbody tr:hover {
+    background-color: rgba(103, 255, 255, 0.776);
+    transition: 0.3s ease-out;
+}
+
+.data table tbody td button {
+    background-color: transparent;
     outline: none;
-    border: 1px solid white;
+    border: none;
     cursor: pointer;
-
+    /* raja Css */
+    border-radius: .5rem;
+    padding: .2rem .5rem;
 }
-
-#search_user:hover{
-    box-shadow: 0px 0px 3px 3px white
+/* raja Css */
+.data table tbody td button i{
+    color: white;
 }
-
-      /* Raja Css */
 @media screen and (max-width:768px) {
-    .parent table td{
+    .service table td{
         display: block;
         width: 100%;
     }
-    .parent table td .l_fixed{
+    .service table td .l_fixed{
         top:0rem;
     }
-    .parent table td .i1{
+    .service table td .i1{
         top:30%;
     }
-    .parent h2{
+    .service h2{
         font-size: 1.2rem;
     }
     /* .parent h2 button{
         font-size: 1rem;
         padding: .1rem .5rem;
     } */
-    .parent h2 .back{
+    .service h2 .back{
         font-size: 1.5rem;
         top: .4rem;
     }

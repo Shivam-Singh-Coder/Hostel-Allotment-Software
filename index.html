@@ -46,9 +46,15 @@
             </table>
             <table id="tab2" hidden>
               <tr>
+                <td style="display: flex;justify-content: space-evenly;align-items: center;">
+                    <input type="radio" id="stu" name="a" value="Admin" style="accent-color: orangered;"><label for="stu" style="margin-left: -22%;font-size: 1.5rem;">Admin</label>
+                    <input type="radio" id="emp" name="a" value="User" checked style="accent-color: orangered;"><label for="emp" style="margin-left: -22%;font-size: 1.5rem;">User</label>
+                </td>
+            </tr>
+              <tr>
                 <td>
                   <i class="fa fa-user"></i>
-                  <input type="text" id="name" placeholder="Username" />
+                  <input type="text" id="name" placeholder="Name" style="text-transform:capitalize" />
                 </td>
               </tr>
               <tr>

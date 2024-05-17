@@ -3,7 +3,7 @@ $(document).ready(function () {
 
     $("#search_user").on("click",function(e){
         e.preventDefault();
-        window.location.href = "fee_search.html";
+        window.location.href = "Feeservice.html";
     })
 
     
@@ -26,10 +26,33 @@ $(document).ready(function () {
     },
     success: function (data) {
         console.log(data)
-        $("#userid").append(data)
+        $("#us_brow").html(data);
     }
 });
+ 
 
+$("#id").change(function () {
+    // e.preventDefault();
+
+    $.ajax({
+        method: 'post',
+        url: 'pythonfile/user.py',
+        data: {
+            what: "checkuserid",
+            userid: $("#id").val().trim()
+        },
+        success: function (data) {
+            console.log(data)
+            if (data.includes("Userid doesnot exist"))
+                swal({
+                    title: "Failed!",
+                    text: "Userid doesnot exit",
+                    icon: "error",
+                });
+        }
+    });
+
+});
 
 
     $("#fee_submit").on("click", function (e) {
@@ -39,12 +62,12 @@ $(document).ready(function () {
             url: 'pythonfile/user.py',
             data: {
                 what: "fee_details_insertion",
-                user_id: $("#id").val(),
-                fee_amount: $("#fee_amt").val(),
+                user_id: $("#id").val().trim(),
+                fee_amount: $("#fee_amt").val().trim(),
                 paydate: $("#paydate").val(),
                 paymode: $('input[name="pay_mode"]:checked').val(),
                 month_name: $("#month_name").val(),
-                status: $("#status").val(),
+                status: $("#status").val().trim(),
             },
             success: function (data) {
                 console.log(data)
@@ -54,13 +77,9 @@ $(document).ready(function () {
                         title: "Yeah!",
                         text: "Fee Inserted Successfully!",
                         icon: "success",
-                    });
-                    $("#id").val("")
-                    $("#fee_amt").val("")
-                    $("#paydate").val("")
-                    $('input[name="pay_mode"]:checked').val("")
-                    $("#month_name").val("")
-                    $("#status").val("")
+                    }).then((value)=>{
+                        location.reload();
+                    })
                 } else if (data.includes("one of the field is empty")) {
                     swal({
                         title: "Failed!",
@@ -93,31 +112,27 @@ $(document).ready(function () {
             data: {
                 what: "fee_details_condtions",
                 userid: $('#userid').val(),
-                fee_amt: $('#fee_amt').val(),
+                fee_amt: $('#fee_amt').val().trim(),
                 paydate: $('#paydate').val(),
-                pay_mode: $('input[name="pay_mode"]:checked').val(),
+                pay_mode: $('#pay_mode').val(),
                 month_name: $('#month_name').val(),
                 status: $('#status').val(),
             },
             success: function (data) {
                 console.log(data);
-
                 if (data.includes("please select one field")) {
-                    $('.below_card').css({ "display": "none" })
                     swal({
                         title: "Failed!",
                         text: "please select atleast one field",
                         icon: "error",
                     });
                 } else if (data.includes("fee details fetched successfully")) {
-                    $('.below_card').css({ "display": "block" })
-                    $('.table_container').html(data)
+                    $('#table-container').html(data)
 
                 } else if (data.includes("no data available")) {
-                    $('.below_card').css({ "display": "none" })
                     swal({
                         title: "Failed!",
-                        text: "no data available",
+                        text: "No Data Available!!",
                         icon: "error",
                     });
                 }
@@ -126,7 +141,7 @@ $(document).ready(function () {
                 // if user click on delete button
                 $(".del").on("click", function () {
                     let uid = $(this).closest('tr').children('td:first-child').text();
-                    // console.log(fid);
+                    console.log(uid);
 
                     swal({
                         title: "Are you sure?",
@@ -156,7 +171,7 @@ $(document).ready(function () {
                                         } else {
                                             swal({
                                                 title: "Failed!",
-                                                text: "unable to delete somethings error!",
+                                                text: "Unable to delete somethings error!",
                                                 icon: "error",
                                             });
                                         }
@@ -171,76 +186,78 @@ $(document).ready(function () {
 
                 $("#edit").on("click", function () {
                     let uid = $(this).closest('tr').children('td:first-child').text();
-                    // console.log(pid);
-                    $.ajax({
-                        method: 'post',
-                        url: 'pythonfile/user.py',
-                        data: {
-                            what: "fetchFeeUpdate",
-                            userid: uid
-                        },
-                        success: function (data) {
-                            console.log(data);
-                            if (data.includes("data fetching successfully")) {
-                                $(".form_placeholder").css({ "display": "block" })
-                                $(".form_placeholder").html(data)
+                    console.log(uid);
+                    sessionStorage.setItem('fee_id',uid);
+                    location.href='Feedetails.html';
+                    // $.ajax({
+                    //     method: 'post',
+                    //     url: 'pythonfile/user.py',
+                    //     data: {
+                    //         what: "fetchFeeUpdate",
+                    //         userid: uid
+                    //     },
+                    //     success: function (data) {
+                    //         console.log(data);
+                    //         if (data.includes("data fetching successfully")) {
+                    //             $(".form_placeholder").css({ "display": "block" })
+                    //             $(".form_placeholder").html(data)
 
 
 
 
 
 
-                                // code for saving the updated the data when use click on update button
-                                $("#save").on("click", function (e) {
-                                    e.preventDefault();
-                                    d = "savetheFeeUpdate"
+                    //             // code for saving the updated the data when use click on update button
+                    //             $("#save").on("click", function (e) {
+                    //                 e.preventDefault();
+                    //                 d = "savetheFeeUpdate"
 
 
-                                    $.ajax({
-                                        method: 'post',
-                                        url: 'pythonfile/user.py',
-                                        data: {
-                                            what: d,
-                                            userid1: $("#userid1").val(),
-                                            fee_amt1: $("#fee_amt1").val(),
-                                            paydate1: $("#paydate1").val(),
-                                            paymode1: $('input[name="pay_mode"]:checked').val(),
-                                            month_name1: $("#month_name1").val(),
-                                            status1: $("#status1").val(),
-                                        },
-                                        success: function (data) {
-                                            // window.location.href = 'showData.html'
-                                            console.log(data);
+                    //                 $.ajax({
+                    //                     method: 'post',
+                    //                     url: 'pythonfile/user.py',
+                    //                     data: {
+                    //                         what: d,
+                    //                         userid1: $("#userid1").val(),
+                    //                         fee_amt1: $("#fee_amt1").val(),
+                    //                         paydate1: $("#paydate1").val(),
+                    //                         paymode1: $('input[name="pay_mode"]:checked').val(),
+                    //                         month_name1: $("#month_name1").val(),
+                    //                         status1: $("#status1").val(),
+                    //                     },
+                    //                     success: function (data) {
+                    //                         // window.location.href = 'showData.html'
+                    //                         console.log(data);
 
-                                            if (data.includes("fee details successfully updated")) {
-                                                swal({
-                                                    title: "Success!",
-                                                    text: "Fee Details Updated Successfully",
-                                                    icon: "success",
-                                                });
-                                                $('.form_placeholder').css({ "display": "none" })
-                                            } else {
-                                                swal({
-                                                    title: "Failed!",
-                                                    text: "somethings error",
-                                                    icon: "error",
-                                                });
-                                            }
-                                        },
-                                    });
-                                })
-
-
-                            }
-
-                            // on click of cross icon
-                            $(".form_placeholder .fa-xmark").on("click", function () {
-                                $(".form_placeholder").css({ "display": "none" });
-                            })
+                    //                         if (data.includes("fee details successfully updated")) {
+                    //                             swal({
+                    //                                 title: "Success!",
+                    //                                 text: "Fee Details Updated Successfully",
+                    //                                 icon: "success",
+                    //                             });
+                    //                             $('.form_placeholder').css({ "display": "none" })
+                    //                         } else {
+                    //                             swal({
+                    //                                 title: "Failed!",
+                    //                                 text: "somethings error",
+                    //                                 icon: "error",
+                    //                             });
+                    //                         }
+                    //                     },
+                    //                 });
+                    //             })
 
 
-                        },
-                    });
+                    //         }
+
+                    //         // on click of cross icon
+                    //         $(".form_placeholder .fa-xmark").on("click", function () {
+                    //             $(".form_placeholder").css({ "display": "none" });
+                    //         })
+
+
+                    //     },
+                    // });
                 });
 
 

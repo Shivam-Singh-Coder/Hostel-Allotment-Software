@@ -16,7 +16,8 @@
 </head>
 <body>
     <div class="parent">
-        <h2> <i class="fa-solid fa-circle-arrow-left back" onclick="history.back();" title="Go Back" ></i>Fee Details<input type="button" value="Search" id="search_user"></h2>
+        <h2> <i class="fa-solid fa-circle-arrow-left back" onclick="history.back();" title="Go Back" ></i>
+            <i class="fa-solid fa-home back" onclick="location.href='Dashboard.html'" title="Go Dashboard" style="margin-left: 5rem;"></i><span>Fee Details</span><input type="button" value="Search" id="search_user"></h2>
         <form enctype="multipart/form-data" method="post">
             
             <table>
@@ -24,14 +25,16 @@
                     
                    
                     <td>
-                        <label class="l_fixed" for="Id">User Id </label>
+                        <label class="l_move" for="Id">User Id </label>
                         <i class="fa-solid fa-id-card i1"></i>
-                        <input required type="text" name="emp_id" id="id" value="">
+                        <input required type="text" name="emp_id" id="id" value="" onfocus="$(this).siblings('label').css({'top':'0%'});" onfocusout="$(this).siblings('label').css({'top': ($(this).val().trim() == '') ? '38%' : '0%'});" list="us_brow">
+                        <datalist id="us_brow"></datalist>
                         <span> </span>
                     </td>
                     <td>
-                        <label class="l_fixed" for="Id">Fee Amount</label>
-                        <input required type="text" name="fee_amount" id="fee_amt" value="">
+                        <label class="l_move" for="Id">Fee Amount</label>
+                        <i class="fa-solid fa-rupee i1"></i>
+                        <input required type="number" name="fee_amount" id="fee_amt" value="" onfocus="$(this).siblings('label').css({'top':'0%'});" onfocusout="$(this).siblings('label').css({'top': ($(this).val().trim() == '') ? '38%' : '0%'});">
                     </td>
                     
                     <td>
@@ -50,10 +53,10 @@
                         <span> </span>
                     </td>
                     <td>
-                        <label class="l_fixed" for="f_name">Month Name</label>
+                        <label class="l_fixed" for="f_name" hidden>Month Name</label>
                         <i class="fa-solid fa-chart-line i1"></i>
                         <!-- <input required type="text" name="father_name" id="month_name" onfocus="alphapets('#f_name')"/> -->
-                        <select name="" id="month_name">
+                        <select name="" id="month_name" onchange="$(this).siblings('label').removeAttr('hidden')" style="text-align: left;padding-left:3rem">
                             <option value="">---Select Month Name---</option>
                             <option value="January">January</option>
                             <option value="February">February</option>
@@ -73,7 +76,7 @@
                     <td>
                         <label class="l_move" for="f_name">Status</label>
                         <i class="fa-solid fa-chart-line i1"></i>
-                        <input required type="text" name="father_name" id="status"/>
+                        <input required type="text" name="father_name" id="status" onfocus="$(this).siblings('label').css({'top':'0%'});" onfocusout="$(this).siblings('label').css({'top': ($(this).val().trim() == '') ? '38%' : '0%'});" />
                         <span></span>
                     </td>
                    
@@ -95,4 +98,94 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <script src="scripts/feedetails.js"></script>
+<script type="text/javascript">
+  $(document).ready(function(){
+    var room_id = sessionStorage.getItem("fee_id");
+    if (room_id) {
+      $.ajax({
+        method: "post",
+        url: "pythonfile/user.py",
+        data: {
+          what: "fetchFeeUpdate",
+          userid: room_id,
+        },
+        success: function (data) {
+          console.log(data);
+          if (data.includes("data fetching successfully!!")) {
+            sessionStorage.removeItem('fee_id');
+            var data_val = data.split("&&");
+            $('.parent h2 span').html('Room Details Update')
+            $("#id").val(data_val[1].trim());
+            $("#id").focus();
+            $("#id").attr('disabled',true);
+            $("#fee_amt").val(parseInt(data_val[2].trim()));
+            $("#fee_amt").focus();
+            $("#paydate").val(data_val[3]);
+            $("#paydate").change();
+            if (data_val[4].trim()=='NEFT')
+                $('#NEFT').prop('checked', true);
+            else if (data_val[4].trim()=='UPI')
+                $('#UPI').prop('checked', true);
+            else if (data_val[4].trim()=='CASH')
+                $('#Cash').prop('checked', true);
+            $("#month_name").val(data_val[5]);
+            $("#month_name").change();
+            $("#status").val(data_val[6]);
+            $("#status").focus();
+            $(".button").html('<button type="button" value="Submit" style="background-color: rgb(0, 255, 0); color: black" id="saveData" > <i class="fa-solid fa-arrow-up-from-bracket"></i> &nbsp; Update </button>');
+          }
+          else{
+            swal("Error", "Something went wrong!", "error");
+          }
+        },
+      });
+    }
+    $(document).on("click","#saveData", function (e) {
+      e.preventDefault();
+      $.ajax({
+        method: "post",
+        url: "pythonfile/user.py",
+        data: {
+          what: "savetheFeeUpdate",
+          id:room_id,
+          userid1: $("#id").val().trim(),
+          fee_amt1: $("#fee_amt").val().trim(),
+          paydate1: $("#paydate").val().trim(),
+          paymode1: $('input[name="pay_mode"]:checked').val(),
+          month_name1: $("#month_name").val().trim(),
+          status1: $("#status").val().trim(),
+        },
+        success: function (data) {
+          console.log(data);
+          if (data.includes("fee details successfully updated")) {
+            swal({
+              title: "Success!",
+              text: "Fee Details updated successfully",
+              icon: "success",
+            })
+            .then((willDelete) => {
+              if (willDelete) {
+                sessionStorage.removeItem('fee_id');
+                location.reload();
+              }
+            });
+          }
+          else {
+            swal({
+              title: "Failed!",
+              text: "somethings error",
+              icon: "error",
+            });
+          }
+        },
+      });
+    });
+  })
+  setInterval(logout,1000);
+      function logout(){
+        if (!sessionStorage.getItem("uname")){
+          location.href='index.html'
+        }
+      }
+</script>
 </html>

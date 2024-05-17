@@ -3,7 +3,7 @@ $(document).ready(function () {
 
     $("#search_user").on("click",function(e){
         e.preventDefault();
-        window.location.href = "room_search.html";
+        window.location.href = "Roomservice.html";
     })
 
     
@@ -21,17 +21,15 @@ $(document).ready(function () {
 
     $("#room_submit").on("click", function (e) {
         e.preventDefault();
-
-
         $.ajax({
             method: 'post',
             url: 'pythonfile/user.py',
             data: {
                 what: "room_details_insertion",
-                room_no: $("#room_no").val(),
-                room_type: $("#room_type").val(),
-                total_bed: $("#t_bed").val(),
-                status: $("#status").val(),
+                room_no: $("#room_no").val().trim(),
+                room_type: $("#room_type").val().trim(),
+                total_bed: $("#t_bed").val().trim(),
+                status: $("#status_ent").val().trim(),
             },
             success: function (data) {
                 console.log(data)
@@ -41,14 +39,30 @@ $(document).ready(function () {
                         title: "Yeah!",
                         text: "Data Inserted Successfully!",
                         icon: "success",
+                    })
+                    .then((willDelete) => {
+                        if (willDelete) {
+                            location.reload();
+                        }
                     });
-                } else if (data.includes("one of the field is empty")) {
+
+                    
+                } 
+                else if (data.includes("Room Number Already Exists!!")) {
+                    swal({
+                        title: "Failed!",
+                        text: "Room Number Already Exists!!",
+                        icon: "error",
+                    });
+                }
+                else if (data.includes("one of the field is empty")) {
                     swal({
                         title: "Failed!",
                         text: "One of the field is empty!",
                         icon: "error",
                     });
-                } else {
+                }
+                else {
                     swal({
                         title: "Failed!",
                         text: "Sorry for inconvenience!",
@@ -72,7 +86,16 @@ $(document).ready(function () {
         },
         success: function (data) {
             console.log(data)
-            $("#roomno").append(data)
+            if (data.includes('all detail fetched!!')){
+                var data_val=data.split('&&');
+                $('#roomno').html(data_val[0]);
+                $('#roomtype').html(data_val[1]);
+                $('#t_bed').html(data_val[2]);
+                $('#status').html(data_val[3]);
+            }
+            else{
+                swal('Warning','Please Do One Entry In Room Details!!','warning')
+            }
         }
     });
 
@@ -86,14 +109,13 @@ $(document).ready(function () {
             url: 'pythonfile/user.py',
             data: {
                 what: "fetch_room_conditions",
-                room_no: $('#roomno').val(),
-                roomtype: $('#roomtype').val(),
-                total_bed: $('#t_bed').val(),
-                status: $('#status').val(),
+                room_no: $('#roomno').val().trim(),
+                roomtype: $('#roomtype').val().trim(),
+                total_bed: $('#t_bed').val().trim(),
+                status: $('#status').val().trim(),
             },
             success: function (data) {
                 console.log(data);
-
                 if (data.includes("please select one field")) {
                     $('.below_card').css({ "display": "none" })
                     swal({
@@ -103,7 +125,7 @@ $(document).ready(function () {
                     });
                 } else if (data.includes("room details fetched successfully")) {
                     $('.below_card').css({ "display": "block" })
-                    $('.table_container').html(data)
+                    $('#table-container').html(data)
 
                 } else if (data.includes("no data available")) {
                     $('.below_card').css({ "display": "none" })
@@ -164,86 +186,10 @@ $(document).ready(function () {
 
                 $("#edit").on("click", function () {
                     let rid = $(this).closest('tr').children('td:first-child').text();
-                    // console.log(pid);
-                    $.ajax({
-                        method: 'post',
-                        url: 'pythonfile/user.py',
-                        data: {
-                            what: "fetchForRoomUpdate",
-                            roomid: rid
-                        },
-                        success: function (data) {
-                            console.log(data);
-                            if (data.includes("data fetching successfully")) {
-                                $(".form_placeholder").css({ "display": "block" })
-                                $(".form_placeholder").html(data)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                                // code for saving the updated the data when use click on update button
-                                $("#save").on("click", function (e) {
-                                    e.preventDefault();
-                                    d = "savetheRoomupdate"
-
-
-                                    $.ajax({
-                                        method: 'post',
-                                        url: 'pythonfile/user.py',
-                                        data: {
-                                            what: d,
-                                            room_no: $("#room_no").val(),
-                                            room_type: $("#room_type").val(),
-                                            t_bed1: $("#t_bed1").val(),
-                                            status1: $("#status1").val(),
-                                        },
-                                        success: function (data) {
-                                            // window.location.href = 'showData.html'
-                                            console.log(data);
-
-                                            if (data.includes("room details successfully updated")) {
-                                                swal({
-                                                    title: "Success!",
-                                                    text: "Room Details updated successfully",
-                                                    icon: "success",
-                                                });
-                                                $('.form_placeholder').css({ "display": "none" })
-                                            } else {
-                                                swal({
-                                                    title: "Failed!",
-                                                    text: "somethings error",
-                                                    icon: "error",
-                                                });
-                                            }
-                                        },
-                                    });
-                                })
-
-
-                            }
-
-                            // on click of cross icon
-                            $(".form_placeholder .fa-xmark").on("click", function () {
-                                $(".form_placeholder").css({ "display": "none" });
-                            })
-
-
-                        },
-                    });
+                    sessionStorage.setItem('room_id',rid);
+                    location.href='Roomdetail.html';
+                    console.log(rid);
                 });
-
-
-
             },
         });
     });
