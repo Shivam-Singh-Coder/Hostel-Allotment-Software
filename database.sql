@@ -1,11 +1,15 @@
+DROP TABLE IF EXISTS `fee_details`;
 CREATE TABLE `fee_details` (
+  `id` int NOT NULL AUTO_INCREMENT,
   `userid` varchar(30) DEFAULT NULL,
   `fee_amount` varchar(10) DEFAULT NULL,
   `pay_date` varchar(30) DEFAULT NULL,
   `pay_mode` varchar(20) DEFAULT NULL,
   `month_name` varchar(10) DEFAULT NULL,
-  `f_status` varchar(20) DEFAULT NULL
+  `f_status` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`id`)
 );
+DROP TABLE IF EXISTS `profile`;
 CREATE TABLE `profile` (
   `sn` int NOT NULL AUTO_INCREMENT,
   `name` varchar(200) NOT NULL,
@@ -20,6 +24,7 @@ CREATE TABLE `profile` (
   `about` varchar(4500) DEFAULT NULL,
   PRIMARY KEY (`sn`)
 );
+DROP TABLE IF EXISTS `room_allocation`;
 CREATE TABLE `room_allocation` (
   `roomid` varchar(30) DEFAULT NULL,
   `userid` varchar(50) DEFAULT NULL,
@@ -27,16 +32,19 @@ CREATE TABLE `room_allocation` (
   `checkout` varchar(30) DEFAULT NULL,
   `status` varchar(30) DEFAULT NULL
 );
+DROP TABLE IF EXISTS `room_details`;
 CREATE TABLE `room_details` (
   `room_no` varchar(30) DEFAULT NULL,
   `room_type` varchar(50) DEFAULT NULL,
   `total_bed` varchar(10) DEFAULT NULL,
   `status` varchar(30) DEFAULT NULL
 );
+DROP TABLE IF EXISTS `rules`;
 CREATE TABLE `rules` (
   `userid` varchar(30) DEFAULT NULL,
   `rules` varchar(500) DEFAULT NULL
 );
+DROP TABLE IF EXISTS `signup`;
 CREATE TABLE `signup` (
   `sn` int NOT NULL AUTO_INCREMENT,
   `name` varchar(200) NOT NULL,
@@ -44,8 +52,10 @@ CREATE TABLE `signup` (
   `sec_q` varchar(500) DEFAULT NULL,
   `ans` varchar(500) DEFAULT NULL,
   `pass` varchar(200) DEFAULT NULL,
+  `user_type` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`sn`)
 );
+DROP TABLE IF EXISTS `user_info`;
 CREATE TABLE `user_info` (
   `userid` varchar(30) DEFAULT NULL,
   `username` varchar(100) DEFAULT NULL,
