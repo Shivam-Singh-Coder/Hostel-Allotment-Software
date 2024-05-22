@@ -146,23 +146,21 @@ $(document).ready(function () {
                 checkin: $('#checkin').val().trim(),
                 checkout: $('#checkout').val().trim(),
                 status: $('#status').val().trim(),
+                user_type: sessionStorage.getItem('user_type'),
             },
             success: function (data) {
                 console.log(data);
 
                 if (data.includes("please select one field")) {
-                    $('.below_card').css({ "display": "none" })
                     swal({
                         title: "Failed!",
                         text: "please select atleast one field",
                         icon: "error",
                     });
                 } else if (data.includes("room allocation fetched successfully")) {
-                    $('.below_card').css({ "display": "block" })
                     $('#table-container').html(data)
 
                 } else if (data.includes("no data available")) {
-                    $('.below_card').css({ "display": "none" })
                     swal({
                         title: "Failed!",
                         text: "no data available",

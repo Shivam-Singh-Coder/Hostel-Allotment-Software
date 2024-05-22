@@ -73,6 +73,7 @@ CREATE TABLE `user_info` (
   `user_pin` varchar(20) DEFAULT NULL,
   `user_local_guard` varchar(100) DEFAULT NULL,
   `user_local_guard_cont` varchar(100) DEFAULT NULL,
-  `user_local_guard_add` varchar(500) DEFAULT NULL
+  `user_local_guard_add` varchar(500) DEFAULT NULL,
+  `email` varchar(105) DEFAULT NULL
 );
 commit;

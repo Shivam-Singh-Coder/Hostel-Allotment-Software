@@ -29,35 +29,36 @@
         ></i>
       </span>
       <div class="pop" style="color: black">
-        <div onclick="location.href='Profile_Page.html'">Profile</div>
-        <div id="logout" onclick="location.href='index.html'">Logout</div>
+        <!-- <div onclick="location.href='Profile_Page.html'">Profile</div> -->
+        <div id="logout" onclick="location.href='index.html'"><i class="fa-solid fa-right-from-bracket"></i>&nbsp;Logout</div>
       </div>
     </div>
     <aside>
-      <h1 style="cursor: pointer" onclick="location.href='Roomdetail.html'">
-        <a href="Roomdetail.html">Room Details</a>
+      <h1 style="cursor: pointer" onclick="sessionStorage.getItem('user_type') == 'User' ? location.href='Roomservice.html' : location.href='Roomdetail.html'">
+        <a >Room Details</a>
       </h1>
       <hr />
-      <h1 style="cursor: pointer" onclick="location.href='Roomallocation.html'">
-        <a href="Roomallocation.html">Room Allocation</a>
+      <h1 style="cursor: pointer" onclick="sessionStorage.getItem('user_type') == 'User' ? location.href='Roomallocationservice.html' : location.href='Roomallocation.html'">
+        <a>Room Allocation</a>
       </h1>
       <hr />
-      <h1 style="cursor: pointer" onclick="location.href='Rules.html'">
+      <h1 style="cursor: pointer" id="hide-us" onclick="location.href='Rules.html'">
         <a href="Rules.html">Rules</a>
       </h1>
-      <hr />
+      <hr id="hide-us" />
       <h1 style="cursor: pointer" onclick="location.href='user.html'">
         <a href="user.html">User</a>
       </h1>
       <hr />
-      <h1 style="cursor: pointer" onclick="location.href='Feedetails.html'">
-        <a href="Feedetails.html">Fee Details</a>
+      <h1 style="cursor: pointer" onclick="sessionStorage.getItem('user_type') == 'User' ? location.href='Feeservice.html' : location.href='Feedetails.html'">
+        <a>Fee Details</a>
       </h1>
     </aside>
     <section>
       <div class="main-div-gp">
         <div class="ur_div">
-          <div onclick="location.href='Roomdetail.html'">
+          <div 
+          onclick="sessionStorage.getItem('user_type') == 'User' ? location.href='Roomservice.html' : location.href='Roomdetail.html'">
             <i class="fa-solid fa-person-booth"></i>
             <span>Room Details</span>
           </div>
@@ -65,13 +66,13 @@
         <div class="ur_div">
           <div
             style="background: #3a98b9"
-            onclick="location.href='Roomallocation.html'"
+            onclick="sessionStorage.getItem('user_type') == 'User' ? location.href='Roomallocationservice.html' : location.href='Roomallocation.html'"
           >
             <i class="fa-solid fa-file-circle-plus"></i>
             <span>Room Allocation</span>
           </div>
         </div>
-        <div class="ur_div">
+        <div class="ur_div" id="hide-us">
           <div
             style="background-color: #c780fa"
             onclick="location.href='Rules.html'"
@@ -92,7 +93,7 @@
         <div class="ur_div">
           <div
             style="background-color: #7f669d"
-            onclick="location.href='Feedetails.html'"
+            onclick="sessionStorage.getItem('user_type') == 'User' ? location.href='Feeservice.html' : location.href='Feedetails.html'"
           >
             <i class="fa-solid fa-indian-rupee-sign"></i>
             <span>Fee Details</span>
@@ -114,6 +115,9 @@
           $("body").html("");
         }
         else{
+          if(user_type == "User"){
+            $('#graph,#hide-us').css('display','none');
+          }
           $('body').removeAttr('hidden');
         }
         $(".name").click(function () {

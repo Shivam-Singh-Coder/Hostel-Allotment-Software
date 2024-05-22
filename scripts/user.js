@@ -65,7 +65,8 @@ $("#search_user").on("click",function(e){
                 emp_pincode: $("#pin").val().trim(),
                 emp_local_guard: $("#local_guard").val().trim(),
                 emp_local_guard_cont: $("#local_guard_contact").val().trim(),
-                emp_local_guard_addr: $("#local_guard_addr").val().trim()
+                emp_local_guard_addr: $("#local_guard_addr").val().trim(),
+                email:$('#email').val().trim()
             },
             success: function (data) {
                 console.log(data)
@@ -83,6 +84,13 @@ $("#search_user").on("click",function(e){
                     swal({
                         title: "Warning!",
                         text: "User Already Exists!!",
+                        icon: "warning",
+                    });
+                }
+                else if (data.includes("email already exists")) {
+                    swal({
+                        title: "Warning!",
+                        text: "Email Already Exists!!",
                         icon: "warning",
                     });
                 }

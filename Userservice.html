@@ -158,6 +158,8 @@
           url: "pythonfile/user.py",
           data: {
             what: "userserdata",
+            email: sessionStorage.getItem('email'),
+            user_type: sessionStorage.getItem('user_type'),
           },
           success: function (data) {
             console.log(data)

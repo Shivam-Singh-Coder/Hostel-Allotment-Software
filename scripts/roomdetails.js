@@ -99,7 +99,6 @@ $(document).ready(function () {
         }
     });
 
-
     // doing searching opration here
     // code for display incoming data after executing query
     $('#user_search_btn').on('click', function () {
@@ -113,22 +112,19 @@ $(document).ready(function () {
                 roomtype: $('#roomtype').val().trim(),
                 total_bed: $('#t_bed').val().trim(),
                 status: $('#status').val().trim(),
+                user_type: sessionStorage.getItem('user_type'),
             },
             success: function (data) {
                 console.log(data);
                 if (data.includes("please select one field")) {
-                    $('.below_card').css({ "display": "none" })
                     swal({
                         title: "Failed!",
                         text: "please select atleast one field",
                         icon: "error",
                     });
                 } else if (data.includes("room details fetched successfully")) {
-                    $('.below_card').css({ "display": "block" })
-                    $('#table-container').html(data)
-
+                    $('#table-container').html(data);
                 } else if (data.includes("no data available")) {
-                    $('.below_card').css({ "display": "none" })
                     swal({
                         title: "Failed!",
                         text: "no data available",

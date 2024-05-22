@@ -30,7 +30,7 @@
             style="margin-left: 5rem"
           ></i>
           Fee Details Service
-          <a href="Feedetails.html"> <button>+ Add New</button></a>
+          <a href="Feedetails.html" id="hide-us"> <button>+ Add New</button></a>
         </h2>
         <form>
           <table>
@@ -134,11 +134,18 @@
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <script>
       $(document).ready(function(){
+        if(sessionStorage.getItem('user_type')=='User'){
+            $('#hide-us,.hide-us').css('display','none');
+        }
+      });
+      $(document).ready(function(){
         $.ajax({
           method: "post",
           url: "pythonfile/user.py",
           data: {
             what: "allfeeinput",
+            email: sessionStorage.getItem('email'),
+            user_type: sessionStorage.getItem('user_type'),
           },
           success: function (data) {
             console.log(data)

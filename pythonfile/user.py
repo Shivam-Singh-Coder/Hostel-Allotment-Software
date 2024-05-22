@@ -33,21 +33,26 @@ if(what == "user_details_insertion"):
         user_local_guard = f.getvalue("emp_local_guard")
         user_local_guard_cont = f.getvalue("emp_local_guard_cont")
         user_local_guard_addr = f.getvalue("emp_local_guard_addr")
+        email = f.getvalue("email")
 
         if( user_name != None and user_contact != None and user_dob != None
         and user_gender != None and user_dob != None and user_blood != None
         and user_father != None and user_mother != None and user_par_contact != None
         and user_photo != None and user_aadhar != None and user_street != None 
         and user_dist_state != None and user_pincode != None and user_local_guard != None and
-        user_local_guard_cont != None and user_local_guard_addr != None):
+        user_local_guard_cont != None and user_local_guard_addr != None and email != None):
             cur.execute(f'select * from user_info where userid="{user_id}"')
             if cur.fetchall()==[]:
-                user_insert_query = f"insert into user_info (userid,username,user_cont,user_gender,user_dob,user_blood_grp,user_f_name,user_m_name,user_p_contact,user_pic,user_addhar,user_street,user_dstate,user_pin, user_local_guard,user_local_guard_cont, user_local_guard_add) values('{user_id}','{user_name}','{user_contact}','{user_gender}','{user_dob}','{user_blood}','{user_father}','{user_mother}','{user_par_contact}','{user_photo}','{user_aadhar}','{user_street}','{user_dist_state}','{user_pincode}','{user_local_guard}','{user_local_guard_cont}','{user_local_guard_addr}')"
-                print(user_insert_query)
-                cur.execute(user_insert_query)
-                print("yaha")
-                con.commit()
-                print("user inserted successfully")
+                cur.execute(f'select * from user_info where email="{email}"')
+                if cur.fetchall()==[]:
+                    user_insert_query = f"insert into user_info (userid,username,user_cont,user_gender,user_dob,user_blood_grp,user_f_name,user_m_name,user_p_contact,user_pic,user_addhar,user_street,user_dstate,user_pin, user_local_guard,user_local_guard_cont, user_local_guard_add, email) values('{user_id}','{user_name}','{user_contact}','{user_gender}','{user_dob}','{user_blood}','{user_father}','{user_mother}','{user_par_contact}','{user_photo}','{user_aadhar}','{user_street}','{user_dist_state}','{user_pincode}','{user_local_guard}','{user_local_guard_cont}','{user_local_guard_addr}','{email}')"
+                    print(user_insert_query)
+                    cur.execute(user_insert_query)
+                    print("yaha")
+                    con.commit()
+                    print("user inserted successfully")
+                else:
+                    print("email already exists")
             else:
                 print("user already exists")
         else:
@@ -125,6 +130,8 @@ elif(what=="fetchroomid"):
 
 elif(what=="userserdata"):
     try:
+        email=f.getvalue('email')
+        user_type=f.getvalue('user_type')
         cur.execute("select distinct userid,user_blood_grp from user_info")
         res = cur.fetchall()
         if res != []:
@@ -134,8 +141,14 @@ elif(what=="userserdata"):
                 userid.add(row[0])
                 bloodgrp.add(row[1])
             print('<option value="">-- Select User Id --</option>')
-            for row in userid:
-                print(f"<option value='{row}'>{row}</option>")
+            if user_type == 'User':
+                cur.execute(f"select userid from user_info where email='{email}'")
+                res = cur.fetchall()
+                if res !=[]:
+                    print(f"<option value='{res[0][0]}'>{res[0][0]}</option>")
+            else:
+                for row in userid:
+                    print(f"<option value='{row}'>{row}</option>")
             print('&&')
             print('<option value="">-- Select Blood Group --</option>')
             for row in bloodgrp:
@@ -363,6 +376,7 @@ elif(what == "fetch_user_conditions"):
                 print("<th>User&nbsp;Id</th>")
                 print("<th>User&nbsp;Name</th>")
                 print("<th>User&nbsp;Contact</th>")
+                print("<th>Email</th>")
                 print("<th>Gender</th>")
                 print("<th>DOB</th>")
                 print("<th>Blood&nbsp;Group</th>")
@@ -386,6 +400,7 @@ elif(what == "fetch_user_conditions"):
                     print(f'<td>{row[0]}</td>')
                     print(f'<td>{row[1]}</td>')
                     print(f'<td>{row[2]}</td>')
+                    print(f'<td>{row[17]}</td>')
                     print(f'<td>{row[3]}</td>')
                     print(f'<td>{row[4]}</td>')
                     print(f'<td>{row[5]}</td>')
@@ -433,7 +448,7 @@ elif(what == "fetch_room_conditions"):
         roomtype = f.getvalue("roomtype")
         total_bed = f.getvalue("total_bed")
         status = f.getvalue("status")
-        
+        user_type = f.getvalue("user_type")        
 
         # Construct conditions for the SQL query
         conditions = []
@@ -465,7 +480,7 @@ elif(what == "fetch_room_conditions"):
             print("<th>Room Type</th>")
             print("<th>Total Bed</th>")
             print("<th>Status</th>")
-            print("<th colspan='2' style='text-align:center;'>Action</th>")
+            print(f"<th colspan='2' style='text-align:center;{'display:none;' if user_type == 'User' else ''}'>Action</th>")
             print("</tr></thead><tbody>")
             for row in srr:
                 print("<tr>")
@@ -474,8 +489,8 @@ elif(what == "fetch_room_conditions"):
                 print(f'<td>{row[2]}</td>')
                 print(f'<td>{row[3]}</td>')
                 
-                print(f"<td><i class='fa-solid fa-pen-to-square fa-xl edit'  id=\"edit\" style=\"color: green;cursor:pointer;\"></i></td>")
-                print(f"<td><i class='fa-solid fa-trash-can fa-xl del' style=\"color: red;cursor:pointer;\"></i></td>")
+                print(f"<td {'style="display:none;"' if user_type == 'User' else ''}><i class='fa-solid fa-pen-to-square fa-xl edit'  id=\"edit\" style=\"color: green;cursor:pointer;\"></i></td>")
+                print(f"<td {'style="display:none;"' if user_type == 'User' else ''}><i class='fa-solid fa-trash-can fa-xl del' style=\"color: red;cursor:pointer;\"></i></td>")
                 print("</tr>")
             print("</tbody></table>")
             print('<p style="display:none;">room details fetched successfully</p>')
@@ -506,7 +521,7 @@ elif(what == "fetch_room_allocation_conditions"):
         checkin = f.getvalue("checkin")
         checkout = f.getvalue("checkout")
         status = f.getvalue("status")
-        
+        user_type = f.getvalue("user_type")        
 
         # Construct conditions for the SQL query
         conditions = []
@@ -541,7 +556,7 @@ elif(what == "fetch_room_allocation_conditions"):
             print("<th>Checkin</th>")
             print("<th>Checkout</th>")
             print("<th>Status</th>")
-            print("<th colspan='2' style='text-align:center;'>Action</th>")
+            print(f"<th colspan='2' style='text-align:center;{'display:none;' if user_type == 'User' else ''}'>Action</th>")
             print("</tr></thead><tbody>")
             for row in srr:
                 print("<tr>")
@@ -551,8 +566,8 @@ elif(what == "fetch_room_allocation_conditions"):
                 print(f'<td>{row[3]}</td>')
                 print(f'<td>{row[4]}</td>')
                 
-                print(f"<td><i class='fa-solid fa-pen-to-square fa-xl edit'  id=\"edit\" style='color:green;cursor:pointer;'></i></td>")
-                print(f"<td><i class='fa-solid fa-trash-can fa-xl del' style='color:red;cursor:pointer;'></i></td>")
+                print(f"<td {'style="display:none;"' if user_type == 'User' else ''}><i class='fa-solid fa-pen-to-square fa-xl edit'  id=\"edit\" style='color:green;cursor:pointer;'></i></td>")
+                print(f"<td {'style="display:none;"' if user_type == 'User' else ''}><i class='fa-solid fa-trash-can fa-xl del' style='color:red;cursor:pointer;'></i></td>")
                 print("</tr>")
             print("</tbody></table>")
             print("<p style='display:none;'>room allocation fetched successfully</p>")
@@ -576,6 +591,8 @@ elif(what == "deleteroomalloc"):
 
 elif(what == 'allfeeinput'):
     try:
+        email=f.getvalue('email')
+        user_type=f.getvalue('user_type')
         cur.execute("select * from fee_details")
         res = cur.fetchall()
         if res != []:
@@ -589,8 +606,14 @@ elif(what == 'allfeeinput'):
                 month_name.add(row[5])
                 fstatus.add(row[6])
             print('<option value="">-- Select User Id --</option>')
-            for row in userid:
-                print(f"<option value='{row}'>{row}</option>")
+            if user_type == 'User':
+                cur.execute(f"select userid from user_info where email='{email}'")
+                res = cur.fetchall()
+                if res !=[]:
+                    print(f"<option value='{res[0][0]}'>{res[0][0]}</option>")
+            else:
+                for row in userid:
+                    print(f"<option value='{row}'>{row}</option>")
             print('&&')
             print('<option value="">-- Select Payment Mode --</option>')
             for row in paymode:
@@ -619,6 +642,7 @@ elif(what == "fee_details_condtions"):
         pay_mode = f.getvalue("pay_mode")
         month_name = f.getvalue("month_name")
         status = f.getvalue("status")
+        user_type = f.getvalue("user_type")
         
 
         # Construct conditions for the SQL query
@@ -654,7 +678,7 @@ elif(what == "fee_details_condtions"):
                 print("<th>Payment Mode</th>")
                 print("<th>Month Name</th>")
                 print("<th>Payment Status</th>")
-                print("<th colspan='2' style='text-align:center;'>Action</th>")
+                print(f"<th colspan='2' style='text-align:center;{'display:none;' if user_type == 'User' else ''}'>Action</th>")
                 print("</tr></thead><tbody>")
                 for row in srr:
                     # print(row)
@@ -667,8 +691,8 @@ elif(what == "fee_details_condtions"):
                     print(f'<td>{row[5]}</td>')
                     print(f'<td>{row[6]}</td>')
                     
-                    print(f"<td><i class='fa-solid fa-pen-to-square fa-xl edit'  id=\"edit\" style='color:green;cursor:pointer;'></i></td>")
-                    print(f"<td><i class='fa-solid fa-trash-can fa-xl del' style='color:red;cursor:pointer;'></i></td>")
+                    print(f"<td {'style="display:none;"' if user_type == 'User' else ''}><i class='fa-solid fa-pen-to-square fa-xl edit'  id=\"edit\" style='color:green;cursor:pointer;'></i></td>")
+                    print(f"<td {'style="display:none;"' if user_type == 'User' else ''}><i class='fa-solid fa-trash-can fa-xl del' style='color:red;cursor:pointer;'></i></td>")
                     print("</tr>")
                 print("</tbody></table>")
                 print("<p style='display:none;'>fee details fetched successfully</p>")

@@ -24,7 +24,7 @@
         ></i>
         <i class="fa-solid fa-home back" onclick="location.href='Dashboard.html'" title="Go Dashboard" style="margin-left: 5rem;"></i>
           Room Allocation Service
-          <a href="Roomallocation.html"> <button>+ Add New</button></a>
+          <a href="Roomallocation.html" id="hide-us"> <button>+ Add New</button></a>
         </h2>
         <form>
           <table>
@@ -95,6 +95,11 @@
     <script src="scripts/roomallocation.js"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <script>
+      $(document).ready(function(){
+        if(sessionStorage.getItem('user_type')=='User'){
+            $('#hide-us,.hide-us').css('display','none');
+        }
+      });
       $(function(){
         $.ajax({
           method: 'post',

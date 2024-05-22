@@ -118,6 +118,18 @@
           </tr>
           <tr>
             <td>
+            <label class="l_move" for="email">Email</label>
+            <i class="fa-solid fa-envelope i1"></i>
+            <input
+              type="email"
+              name="email"
+              id="email"
+              onfocus="$(this).siblings('label').css({'top':'0%'});"
+              onfocusout="$(this).siblings('label').css({'top': ($(this).val().trim() == '') ? '38%' : '0%'});"
+            />
+            <span></span>
+          </td>
+            <td>
               <label for="" class="l_fixed" style="left: 1rem">Gender : </label>
               <br />
               &nbsp; &nbsp; &nbsp;<input
@@ -147,6 +159,8 @@
               <input type="date" name="dob" id="dob" />
               <span> </span>
             </td>
+          </tr>
+          <tr>
             <td>
               <label class="l_fixed" for="bloodgrp" hidden>Blood Group</label>
               <select
@@ -165,8 +179,6 @@
                 <option value="AB-">AB-</option>
               </select>
             </td>
-          </tr>
-          <tr>
             <td>
               <label class="l_move" for="f_name">Father's Name</label>
               <i class="fa-solid fa-user i1"></i>
@@ -191,6 +203,8 @@
               />
               <span></span>
             </td>
+          </tr>
+          <tr>
             <td>
               <label class="l_move" for="p_contact"
                 >Parent Contact Number</label
@@ -207,8 +221,6 @@
               />
               <span></span>
             </td>
-          </tr>
-          <tr>
             <td>
               <label for="pic" class="l_fixed">Photo</label>
               <input
@@ -233,6 +245,8 @@
               />
               <span> </span>
             </td>
+          </tr>
+          <tr>
             <td>
               <label class="l_move" for="street">Street</label>
               <i class="fa-solid fa-street-view i1"></i>
@@ -245,8 +259,6 @@
               />
               <span> </span>
             </td>
-          </tr>
-          <tr>
             <td>
               <label class="l_move" for="dit">District, State</label>
               <i class="fa-solid fa-building i1"></i>
@@ -273,19 +285,19 @@
               />
               <span> </span>
             </td>
-            <td>
-              <label class="l_move" for="local_guard">Local Guardian </label>
-              <i class="fa-solid fa-user i1"></i>
-              <input
-                type="text"
-                name="father_name"
-                id="local_guard"
-                onfocus="$(this).siblings('label').css({'top':'0%'});"
-                onfocusout="$(this).siblings('label').css({'top': ($(this).val().trim() == '') ? '38%' : '0%'});"
-              />
-              <span></span>
-            </td>
           </tr>
+          <td>
+            <label class="l_move" for="local_guard">Local Guardian </label>
+            <i class="fa-solid fa-user i1"></i>
+            <input
+              type="text"
+              name="father_name"
+              id="local_guard"
+              onfocus="$(this).siblings('label').css({'top':'0%'});"
+              onfocusout="$(this).siblings('label').css({'top': ($(this).val().trim() == '') ? '38%' : '0%'});"
+            />
+            <span></span>
+          </td>
           <td>
             <label class="l_move" for="local_guard_contact"
               >Local Guardian Number</label
@@ -300,7 +312,7 @@
             />
             <span></span>
           </td>
-          <td colspan="2">
+          <td>
             <label class="l_move" for="local_guard_addr"
               >Local Guardian Address</label
             >
@@ -351,6 +363,11 @@
   <script src="scripts/user.js"></script>
   <script type="text/javascript">
     $(document).ready(function () {
+      if (sessionStorage.getItem('user_type')=='User'){
+        $('#email').val(sessionStorage.getItem('email'));
+        $('#email').focus();
+        $('#email').attr('readonly',true);
+      }
       var imageDataUrl = "";
       var room_id = sessionStorage.getItem("user_details");
       if (room_id) {
@@ -364,7 +381,7 @@
           success: function (data) {
             console.log(data);
             if (data.includes("data fetching successfully!!")) {
-              //sessionStorage.removeItem('user_details');
+              sessionStorage.removeItem('user_details');
               var data_val = data.split("&&");
               $(".parent h2 span").html("User Details Update");
               $("#id").val(data_val[0].trim());

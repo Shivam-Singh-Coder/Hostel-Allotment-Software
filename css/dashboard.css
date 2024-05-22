@@ -29,7 +29,7 @@ body {
 
 .pop {
   position: absolute;
-  height: 10rem;
+  /* height: 10rem; */
   width: 15rem;
   right: 10rem;
   top: 6.5rem;

@@ -117,6 +117,7 @@ $("#id").change(function () {
                 pay_mode: $('#pay_mode').val(),
                 month_name: $('#month_name').val(),
                 status: $('#status').val(),
+                user_type: sessionStorage.getItem('user_type'),
             },
             success: function (data) {
                 console.log(data);
