@@ -6,10 +6,10 @@ import mysql.connector
 import os
 # con=mysql.connector.connect(host='localhost', user='hostel', passwd='data73063',database='hostel')
 # Database connection using environment variables
-db_host = os.getenv("DB_HOST", "localhost")
+db_host = os.getenv("DB_HOST", "dpg-cumqoulds78s73epufb0-a")
 db_user = os.getenv("DB_USER", "hostel")
-db_password = os.getenv("DB_PASSWORD", "data73063")
-db_name = os.getenv("DB_NAME", "hostel")
+db_password = os.getenv("DB_PASSWORD", "OVXKX6clweCOfIZcNxxiJn7d48XEvx1O")
+db_name = os.getenv("DB_NAME", "hostel_xq0q")
 
 # Connect to the database
 con = mysql.connector.connect(
