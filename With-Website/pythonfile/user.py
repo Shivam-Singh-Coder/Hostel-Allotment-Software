@@ -1,12 +1,24 @@
-#! C:\Users\ASUS\AppData\Local\Programs\Python\Python312\python.exe
+#!/usr/bin/env python3
 print ("Content-Type: text/html\r\n\r\n")
 # print()
 import cgi
 # import cgitb
 import mysql.connector
+import os
+# con=mysql.connector.connect(host='localhost', user='hostel', passwd='data73063',database='hostel')
+# Database connection using environment variables
+db_host = os.getenv("DB_HOST", "localhost")
+db_user = os.getenv("DB_USER", "hostel")
+db_password = os.getenv("DB_PASSWORD", "data73063")
+db_name = os.getenv("DB_NAME", "hostel")
 
-
-con = mysql.connector.connect(host='localhost', user='hostel', passwd='data73063',database='hostel')
+# Connect to the database
+con = mysql.connector.connect(
+    host=db_host,
+    user=db_user,
+    passwd=db_password,
+    database=db_name
+)
 # print(con)
 cur=con.cursor()
 # print(cur)
